@@ -1,7 +1,8 @@
 
 module.dependencies([
 
-    "./pages"
+    "./goodbye",
+    "./hello_world"
 
 ])
 

@@ -4,8 +4,11 @@ module.dependencies([
     "n0d3s"
 
 ])
-.register_page();
+.register_page(
+    `Static: Hello World 1`, 
+    `Static: Hello World 3`
+);
 
 
 
-$('body').textContent = "Hello World";
+$('body').innerHTML += "<br/> Dynamic: Hello World 2 <br/>";

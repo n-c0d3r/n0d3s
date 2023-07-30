@@ -242,9 +242,12 @@ class BuildTool {
                 return this;             
             },
 
-            register_page(){
+            register_page(preInnerHTML = "", postInnerHTML = ""){
 
                 this.is_page = true;
+
+                this.preInnerHTML = preInnerHTML;
+                this.postInnerHTML = postInnerHTML;
 
                 return this;     
             },
@@ -297,8 +300,6 @@ class BuildTool {
     
             return sortedModules;
         }
-
-        let pushedModuleIds = new Object();
 
         let sortedModules = traverse(module);
 
@@ -383,7 +384,7 @@ class BuildTool {
 
             }
 
-
+            
 
             let htmlContent = `
             
@@ -398,11 +399,18 @@ class BuildTool {
                     <!--<script src="${path.relative(path.dirname(outputPath), clientLibDir)}/n0d3s.js"></script>-->
                 </head>
                 <body>
+                    ${module.preInnerHTML || ""}
+
                     ${htmlModuleContent}
+
+                    ${module.postInnerHTML || ""}
                 </body>
                 </html>
             
             `;
+
+            if(!fs.existsSync(path.dirname(outputPath)))
+                fs.mkdirSync(path.dirname(outputPath));
 
             fs.writeFileSync(outputPath, htmlContent);
 
