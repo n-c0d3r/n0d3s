@@ -200,6 +200,91 @@ class BuildTool {
         return null;
     }
 
+    parse_use_paths(from_file_path, arr){
+
+        let build_tool = this;
+
+        function search_for_dir(from_file_path, to_dir_path){
+
+            let corrected_file_path = path.resolve(
+                path.dirname(from_file_path), 
+                to_dir_path
+            );
+    
+            if(fs.existsSync(corrected_file_path))
+                return corrected_file_path;
+    
+    
+    
+            for(let additional_source_dir of build_tool.additional_source_dirs){
+    
+                let corrected_file_path = path.resolve(
+                    additional_source_dir, 
+                    to_dir_path
+                );
+        
+                if(fs.existsSync(corrected_file_path))
+                    return corrected_file_path;
+    
+            }
+
+        }
+
+        let result = [];
+        
+        for(let to_path of arr){
+
+            while(to_path[to_path.length - 1] == ' '){
+
+                to_path = to_path.slice(0, to_path.length - 1);
+
+            }
+
+            if(to_path[to_path.length - 1] == '*' && to_path[to_path.length - 2] == '*'){
+
+                let dir_path = search_for_dir(from_file_path, path.dirname(to_path));
+
+                let items = fs.readdirSync(dir_path);
+
+                for(let item of items){
+
+                    let item_path = `${dir_path}/${item}`;
+
+                    if(fs.statSync(item_path).isDirectory())
+                        result.push(item_path);
+                    else if(path.extname(item) == '.js')
+                        result.push(item_path);
+
+                }
+
+            }
+            else if(to_path[to_path.length - 1] == '*'){
+
+                let dir_path = search_for_dir(from_file_path, path.dirname(to_path));
+
+                let items = fs.readdirSync(dir_path);
+
+                for(let item of items){
+
+                    let item_path = `${dir_path}/${item}`;
+
+                    if(fs.statSync(item_path).isFile() && path.extname(item) == '.js')
+                        result.push(item_path);
+
+                }
+
+            }
+            else{
+
+                result.push(to_path);
+
+            }
+
+        }
+
+        return result;
+    }
+
     importSrc(src_file){
 
         var build_tool = this;
@@ -226,12 +311,19 @@ class BuildTool {
 
                 let corrected_file_path = build_tool.search_for_corrected_path(this.src_file, file_path);
 
-                return build_tool.importSrc(corrected_file_path);
+                let module = build_tool.importSrc(corrected_file_path);
+
+                if(module == null)
+                    throw new Error(`${file_path} module is null`);
+
+                return module;
             },
 
-            dependencies(arr){
+            use(arr){
 
-                for(let module_path of arr){
+                let parsed_arr = build_tool.parse_use_paths(this.src_file, arr);
+
+                for(let module_path of parsed_arr){
 
                     let module = this.import(module_path);
 

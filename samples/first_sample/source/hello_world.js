@@ -1,5 +1,5 @@
 
-module.dependencies([
+module.use([
 
     "n0d3s"
 

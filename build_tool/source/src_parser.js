@@ -61,7 +61,7 @@ class SrcParser {
 
             var module = {
 
-                dependencies() { return module; },
+                use() { return module; },
                 register_page() { return module; }
 
             };

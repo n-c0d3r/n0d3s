@@ -1,10 +1,11 @@
 
-module.dependencies([
+module.use([
 
     "./goodbye",
-    "./hello_world"
+    "./hello_world",
+    "./subpages/**"
 
-])
+]);
 
 
 
