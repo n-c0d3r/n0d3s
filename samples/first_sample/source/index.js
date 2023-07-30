@@ -1,0 +1,9 @@
+
+module.dependencies({
+
+    pages : "./pages"
+
+})
+
+
+

@@ -1,0 +1,22 @@
+{
+  "name": "n0d3s",
+  "version": "0.1.0",
+  "description": "<img src=\"https://i.ibb.co/VxJhd4b/BG4-wide-0-25x.png\" border=\"0\" width=\"100%\"/>",
+  "main": "n0d3s.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/n-c0d3r/n0d3s.git"
+  },
+  "author": "n-c0d3r",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/n-c0d3r/n0d3s/issues"
+  },
+  "homepage": "https://github.com/n-c0d3r/n0d3s#readme",
+  "dependencies": {
+    "uuid": "^9.0.0"
+  }
+}
