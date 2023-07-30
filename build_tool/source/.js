@@ -229,6 +229,9 @@ class BuildTool {
 
         let scriptOutputDir = this.command.build_dir + '/scripts';
 
+        if(!fs.existsSync(scriptOutputDir))
+            fs.mkdirSync(scriptOutputDir);
+
         for(let key in this.modules){
 
             let module = this.modules[key];
