@@ -2,6 +2,9 @@
 const fs = require("fs");
 const path = require("path");
 const uuid = require('uuid');
+const fse = require('fs-extra');
+
+const { Queue } = require('@datastructures-js/queue');
 
 const file_path_to_id = require('./file_path_to_id');
 
@@ -25,6 +28,12 @@ class BuildTool {
     get cli_argv(){
 
         return this.#cli_argv;
+    }
+
+    #additional_source_dirs;
+    get additional_source_dirs(){
+
+        return this.#additional_source_dirs;
     }
 
     #command;
@@ -85,7 +94,7 @@ class BuildTool {
 
         });
 
-        this.#modules = new Object();
+        this.#modules = [];
 
     }
 
@@ -93,7 +102,11 @@ class BuildTool {
 
         this.#options = options || new Object();    
 
-        this.#cli_argv = this.#options.cli_argv || [];
+        this.#cli_argv = this.#options.cli_argv || [];   
+
+        this.#additional_source_dirs = this.#options.additional_source_dirs || [ 
+            __dirname + "/../../client_lib/source" 
+        ];
 
     }
 
@@ -114,8 +127,8 @@ class BuildTool {
                 src_dir_path = this.command.source_dir;
             else return false;
 
-            if(!fs.existsSync(build_dir_path)) 
-                return false;
+            // if(!fs.existsSync(build_dir_path)) 
+                // return false;
             if(!fs.existsSync(src_dir_path)) 
                 return false;
             if(!fs.existsSync(this.command.src_index_file)) 
@@ -128,6 +141,63 @@ class BuildTool {
         }
 
         return true;
+    }
+
+    search_for_corrected_path(from_file_path, to_file_path) {
+
+        let corrected_file_path = path.resolve(
+            path.dirname(from_file_path), 
+            to_file_path
+        );
+
+        if(fs.existsSync(corrected_file_path)){
+
+            if(fs.statSync(corrected_file_path).isDirectory())
+                corrected_file_path += "/.js";
+            else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != '.js')
+                corrected_file_path += '.js';
+
+        }
+        else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != '.js')
+            corrected_file_path += '.js';
+
+        if(fs.existsSync(path.normalize(corrected_file_path))){
+
+            return corrected_file_path;
+        }
+
+
+
+        for(let additional_source_dir of this.additional_source_dirs){
+
+            let corrected_file_path = path.resolve(
+                additional_source_dir, 
+                to_file_path
+            );
+    
+            if(fs.existsSync(corrected_file_path)){
+
+                if(fs.statSync(corrected_file_path).isDirectory())
+                    corrected_file_path += "/.js";                    
+                else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != '.js')
+                    corrected_file_path += '.js';
+    
+            }
+            else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != '.js')
+                corrected_file_path += '.js';
+    
+            if(fs.existsSync(corrected_file_path)){
+    
+                return corrected_file_path;
+            }
+
+        }
+
+
+
+        throw new Error(`${from_file_path}: module ${to_file_path} not found`);
+
+        return null;
     }
 
     importSrc(src_file){
@@ -154,24 +224,18 @@ class BuildTool {
 
             import(file_path){
 
-                let corrected_file_path = path.resolve(
-                    path.dirname(this.src_file), 
-                    file_path
-                );
-
-                if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != '.js')
-                    corrected_file_path += '.js';
+                let corrected_file_path = build_tool.search_for_corrected_path(this.src_file, file_path);
 
                 return build_tool.importSrc(corrected_file_path);
             },
 
-            dependencies(obj){
+            dependencies(arr){
 
-                this.dependency_data = obj;
+                for(let module_path of arr){
 
-                for(let key in obj){
+                    let module = this.import(module_path);
 
-                    this.dependency_data[key] = this.import(obj[key]);
+                    this.dependency_data[module.id] = module;
 
                 }
 
@@ -208,18 +272,54 @@ class BuildTool {
         return func(true);
     }
 
-    buildClSrcContent(module) {
+    sortedDependencies(module) {
 
-        if(module.id in this.#modules)
-            return;
+        function traverse(module, pushedModuleIds = new Object()) {
+    
+            let sortedModules = [];
+    
+            for(let key in module.dependency_data){
+    
+                let dependency_module = module.dependency_data[key];
+    
+                if(dependency_module.id in pushedModuleIds)
+                    continue;
+    
+                pushedModuleIds[dependency_module.id] = dependency_module.id;
+    
+                sortedModules = sortedModules.concat(
+                    traverse(dependency_module, pushedModuleIds)
+                );
+    
+            }
+    
+            sortedModules.push(module);
+    
+            return sortedModules;
+        }
 
-        this.#modules[module.id] = module;
+        let pushedModuleIds = new Object();
 
-        module.cl_src_content = this.src_parser.parse_run_state_src_content(module);
+        let sortedModules = traverse(module);
 
-        for(let key in module.dependency_data){
+        sortedModules = sortedModules.slice(0, sortedModules.length - 1);
 
-            this.buildClSrcContent(module.dependency_data[key]);
+        return sortedModules;
+    }
+
+    buildSortedModuleList() {
+
+        this.#modules = this.sortedDependencies(this.index_module);
+
+        this.#modules.push(this.index_module);
+
+    }
+
+    buildClSrcContent() {
+
+        for(let module of this.#modules){
+
+            module.cl_src_content = this.src_parser.parse_run_state_src_content(module);
 
         }
 
@@ -232,13 +332,79 @@ class BuildTool {
         if(!fs.existsSync(scriptOutputDir))
             fs.mkdirSync(scriptOutputDir);
 
-        for(let key in this.modules){
-
-            let module = this.modules[key];
+        for(let module of this.modules){
 
             let outputPath = `${scriptOutputDir}/${module.id}`;
 
             fs.writeFileSync(outputPath, module.cl_src_content);
+
+        }
+
+    }
+
+    savePages(){
+
+        let pageOutputDir = this.command.build_dir + '/pages';
+
+        let scriptOutputDir = this.command.build_dir + '/scripts';
+
+        let clientLibDir = this.command.build_dir + '/client_lib/source';
+
+        if(!fs.existsSync(pageOutputDir))
+            fs.mkdirSync(pageOutputDir);
+
+        for(let module of this.modules){
+
+            if(!module.is_page)
+                continue;
+
+            let relative_path = path.normalize(path.relative(this.command.source_dir, module.src_file));
+
+            relative_path = relative_path.slice(0, relative_path.length - 2) + 'html';
+
+            let outputPath = `${pageOutputDir}/${relative_path}`;
+            let scriptOutputPath = `${scriptOutputDir}/${module.id}`;
+
+            
+
+            let modules = this.sortedDependencies(module);
+
+            modules.push(module);
+
+
+
+            let htmlModuleContent = `
+            
+            `;
+
+            for(let m of modules){
+
+                htmlModuleContent += `<script src="${path.relative(path.dirname(outputPath), `${scriptOutputDir}/${m.id}`)}"></script>`;
+
+            }
+
+
+
+            let htmlContent = `
+            
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta http-equiv='cache-control' content='no-cache'> 
+                    <meta http-equiv='expires' content='0'> 
+                    <meta http-equiv='pragma' content='no-cache'>
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <!--<script src="${path.relative(path.dirname(outputPath), clientLibDir)}/n0d3s.js"></script>-->
+                </head>
+                <body>
+                    ${htmlModuleContent}
+                </body>
+                </html>
+            
+            `;
+
+            fs.writeFileSync(outputPath, htmlContent);
 
         }
 
@@ -255,11 +421,20 @@ class BuildTool {
 
 
 
+        if(fs.existsSync(this.command.build_dir))
+            fs.rmSync(this.command.build_dir, { recursive: true, force: true });
+
+        fs.mkdirSync(this.command.build_dir);
+
+
+
         this.#index_module = this.importSrc(this.command.src_index_file);
 
-        this.buildClSrcContent(this.index_module);
+        this.buildSortedModuleList();
+        this.buildClSrcContent();
 
         this.saveScripts();
+        this.savePages();
         
     }
 

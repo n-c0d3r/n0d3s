@@ -57,39 +57,19 @@ class SrcParser {
 
 
 
-        let dependency_data_getter_content = `
-        
-
-        
-        `;
-
-        for(let key in module.dependency_data){
-
-            let dependency_module = module.dependency_data[key];
-
-            dependency_data_getter_content += `
-            
-                if(n0d3s.cached_dependency_datas == null)
-                    n0d3s.cached_dependency_datas = new Object();
-
-                var ${key} = n0d3s.cached_dependency_datas["${dependency_module.id}"];
-            
-            `;
-
-        }
-
-
-
         return `
 
-            var module = this;
+            var module = {
+
+                dependencies() { return module; },
+                register_page() { return module; }
+
+            };
             
             var build_state = false;
             var run_state = true;
-
-            ${dependency_data_getter_content}
-        
-            if(build_state) return ${c}
+            
+            ${c}
         
         `;
     }

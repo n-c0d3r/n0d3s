@@ -1,6 +1,7 @@
 
-module.dependencies({
+module.dependencies([
 
-    main_page : "./main_page"
+    "./hello_world",
+    "./goodbye"
 
-});
+]);
