@@ -352,33 +352,65 @@ class BuildTool {
 
             use(obj){
 
-                for(let key in obj){
+                if(Array.isArray(obj)){
 
-                    let parsed_paths = build_tool.parse_use_path(this.src_file, obj[key]);
+                    for(let to_path of obj){
 
-                    this.variable_to_dependencies[key] = [];
+                        let parsed_paths = build_tool.parse_use_path(this.src_file, to_path);
 
-                    if(parsed_paths.length == 1){
+                        if(parsed_paths.length == 1){
 
-                        let module = this.import(parsed_paths[0]);
+                            let module = this.import(parsed_paths[0]);
 
-                        this.dependency_data[module.id] = module;
-
-                        this.variable_to_dependencies[key].push(module);
-
-                    }
-                    else{
-
-                        for(let parsed_path of parsed_paths){
-
-                            let module = this.import(parsed_path);
-    
                             this.dependency_data[module.id] = module;
 
-                            this.variable_to_dependencies[key].push(module);
+                        }
+                        else{
+
+                            for(let parsed_path of parsed_paths){
+
+                                let module = this.import(parsed_path);
+        
+                                this.dependency_data[module.id] = module;
+
+                            }
 
                         }
 
+                    }
+
+                }
+                else{
+
+                    for(let key in obj){
+    
+                        let parsed_paths = build_tool.parse_use_path(this.src_file, obj[key]);
+    
+                        this.variable_to_dependencies[key] = [];
+    
+                        if(parsed_paths.length == 1){
+    
+                            let module = this.import(parsed_paths[0]);
+    
+                            this.dependency_data[module.id] = module;
+    
+                            this.variable_to_dependencies[key].push(module);
+    
+                        }
+                        else{
+    
+                            for(let parsed_path of parsed_paths){
+    
+                                let module = this.import(parsed_path);
+        
+                                this.dependency_data[module.id] = module;
+    
+                                this.variable_to_dependencies[key].push(module);
+    
+                            }
+    
+                        }
+    
                     }
 
                 }
