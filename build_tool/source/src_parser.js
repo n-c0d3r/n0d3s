@@ -57,19 +57,64 @@ class SrcParser {
 
 
 
+        let n0d3s_cached_dependency_results_js = ``;
+
+        for(let variable_name in module.variable_to_dependencies){
+
+            let dependencies = module.variable_to_dependencies[variable_name];
+
+            if(dependencies.length == 1){
+
+                n0d3s_cached_dependency_results_js += `
+                    var ${variable_name} = window.n0d3s_cached_dependency_results["${dependencies[0].id}"];
+                `;
+
+            }
+            else{
+
+                n0d3s_cached_dependency_results_js += `
+                    var ${variable_name} = [];
+                `;
+
+                for(let i = 0; i < dependencies.length; ++i){
+
+                    n0d3s_cached_dependency_results_js += `
+                        ${variable_name}.push(window.n0d3s_cached_dependency_results["${dependencies[i].id}"]);
+                    `;
+
+                }
+
+            }
+
+        }
+
+
+
         return `
 
             var module = {
 
                 use() { return module; },
-                register_page() { return module; }
+                register_page() { return module; },
+                use_open_mode() { return module; }
 
             };
             
             var build_state = false;
             var run_state = true;
+
+            if(window.n0d3s_cached_dependency_results == null)
+                window.n0d3s_cached_dependency_results = new Object();
+
             
-            ${c}
+            
+            ${(module.open_mode) ? "" : `window.n0d3s_cached_dependency_results["${module.id}"] = (()=>{`}            
+            
+                ${(module.open_mode) ? "" : n0d3s_cached_dependency_results_js}
+            
+                ${c}
+
+            ${(module.open_mode) ? "" : `})();`}
         
         `;
     }

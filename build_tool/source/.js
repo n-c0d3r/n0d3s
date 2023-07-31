@@ -200,7 +200,7 @@ class BuildTool {
         return null;
     }
 
-    parse_use_paths(from_file_path, arr){
+    parse_use_path(from_file_path, to_path){
 
         let build_tool = this;
 
@@ -232,53 +232,49 @@ class BuildTool {
 
         let result = [];
         
-        for(let to_path of arr){
+        while(to_path[to_path.length - 1] == ' '){
 
-            while(to_path[to_path.length - 1] == ' '){
+            to_path = to_path.slice(0, to_path.length - 1);
 
-                to_path = to_path.slice(0, to_path.length - 1);
+        }
+
+        if(to_path[to_path.length - 1] == '*' && to_path[to_path.length - 2] == '*'){
+
+            let dir_path = search_for_dir(from_file_path, path.dirname(to_path));
+
+            let items = fs.readdirSync(dir_path);
+
+            for(let item of items){
+
+                let item_path = `${dir_path}/${item}`;
+
+                if(fs.statSync(item_path).isDirectory())
+                    result.push(item_path);
+                else if(path.extname(item) == '.js')
+                    result.push(item_path);
+
+            }
+
+        }
+        else if(to_path[to_path.length - 1] == '*'){
+
+            let dir_path = search_for_dir(from_file_path, path.dirname(to_path));
+
+            let items = fs.readdirSync(dir_path);
+
+            for(let item of items){
+
+                let item_path = `${dir_path}/${item}`;
+
+                if(fs.statSync(item_path).isFile() && path.extname(item) == '.js')
+                    result.push(item_path);
 
             }
 
-            if(to_path[to_path.length - 1] == '*' && to_path[to_path.length - 2] == '*'){
+        }
+        else{
 
-                let dir_path = search_for_dir(from_file_path, path.dirname(to_path));
-
-                let items = fs.readdirSync(dir_path);
-
-                for(let item of items){
-
-                    let item_path = `${dir_path}/${item}`;
-
-                    if(fs.statSync(item_path).isDirectory())
-                        result.push(item_path);
-                    else if(path.extname(item) == '.js')
-                        result.push(item_path);
-
-                }
-
-            }
-            else if(to_path[to_path.length - 1] == '*'){
-
-                let dir_path = search_for_dir(from_file_path, path.dirname(to_path));
-
-                let items = fs.readdirSync(dir_path);
-
-                for(let item of items){
-
-                    let item_path = `${dir_path}/${item}`;
-
-                    if(fs.statSync(item_path).isFile() && path.extname(item) == '.js')
-                        result.push(item_path);
-
-                }
-
-            }
-            else{
-
-                result.push(to_path);
-
-            }
+            result.push(to_path);
 
         }
 
@@ -305,7 +301,9 @@ class BuildTool {
             ...BuildTool,
 
             dependency_data: new Object(),
+            variable_to_dependencies: new Object(),
             is_page: false,
+            open_mode: false,
 
             import(file_path){
 
@@ -319,15 +317,36 @@ class BuildTool {
                 return module;
             },
 
-            use(arr){
+            use(obj){
 
-                let parsed_arr = build_tool.parse_use_paths(this.src_file, arr);
+                for(let key in obj){
 
-                for(let module_path of parsed_arr){
+                    let parsed_paths = build_tool.parse_use_path(this.src_file, obj[key]);
 
-                    let module = this.import(module_path);
+                    this.variable_to_dependencies[key] = [];
 
-                    this.dependency_data[module.id] = module;
+                    if(parsed_paths.length == 1){
+
+                        let module = this.import(parsed_paths[0]);
+
+                        this.dependency_data[module.id] = module;
+
+                        this.variable_to_dependencies[key].push(module);
+
+                    }
+                    else{
+
+                        for(let parsed_path of parsed_paths){
+
+                            let module = this.import(parsed_path);
+    
+                            this.dependency_data[module.id] = module;
+
+                            this.variable_to_dependencies[key].push(module);
+
+                        }
+
+                    }
 
                 }
 
@@ -342,6 +361,13 @@ class BuildTool {
                 this.postInnerHTML = postInnerHTML;
 
                 return this;     
+            },
+
+            use_open_mode(){
+
+                this.open_mode = true;
+
+                return this;
             },
 
             require(file_path, globa_mode = true){

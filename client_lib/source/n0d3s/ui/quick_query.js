@@ -1,17 +1,8 @@
 
-module.use([
-    
-    "./utils"
+module.use({
 
-]);
-
-
-
-n0d3s.UI = {
-
-
-
-};
+})
+.use_open_mode();
 
 
 
@@ -19,6 +10,7 @@ function $(query) {
 
     return document.querySelector(query);
 }
+
 function $$(query) {
 
     return document.querySelectorAll(query);

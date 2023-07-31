@@ -1,8 +1,18 @@
 
-module.use([
+module.use({
 
-    "./utils",
+    UI : "./ui"
+    
+});
 
-    "./ui"
 
-]);
+
+const n0d3s = {
+
+    UI,
+
+};
+
+
+
+return n0d3s;
