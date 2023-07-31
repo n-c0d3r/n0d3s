@@ -281,8 +281,12 @@ class BuildTool {
 
                 let item_path = `${dir_path}/${item}`;
 
-                if(fs.statSync(item_path).isDirectory())
-                    result.push(item_path);
+                if(fs.statSync(item_path).isDirectory()){
+
+                    if(fs.existsSync(item_path + '/.js'))
+                        result.push(item_path);
+
+                }
                 else if(path.extname(item) == '.js')
                     result.push(item_path);
 
@@ -342,10 +346,13 @@ class BuildTool {
 
                 let corrected_file_path = build_tool.search_for_corrected_path(this.src_file, file_path);
 
+                if(path.resolve(corrected_file_path) == path.resolve(this.src_file))
+                    return null;
+
                 let module = build_tool.importSrc(corrected_file_path);
 
                 if(module == null)
-                    throw new Error(`${file_path} module is null`);
+                    throw new Error(`import ${file_path} failed`);
 
                 return module;
             },
@@ -362,7 +369,8 @@ class BuildTool {
 
                             let module = this.import(parsed_paths[0]);
 
-                            this.dependency_data[module.id] = module;
+                            if(module != null)
+                                this.dependency_data[module.id] = module;
 
                         }
                         else{
@@ -371,7 +379,8 @@ class BuildTool {
 
                                 let module = this.import(parsed_path);
         
-                                this.dependency_data[module.id] = module;
+                                if(module != null)
+                                    this.dependency_data[module.id] = module;
 
                             }
 
@@ -392,9 +401,13 @@ class BuildTool {
     
                             let module = this.import(parsed_paths[0]);
     
-                            this.dependency_data[module.id] = module;
+                            if(module != null) {
+
+                                this.dependency_data[module.id] = module;
     
-                            this.variable_to_dependencies[key].push(module);
+                                this.variable_to_dependencies[key].push(module);
+
+                            }
     
                         }
                         else{
@@ -403,9 +416,13 @@ class BuildTool {
     
                                 let module = this.import(parsed_path);
         
-                                this.dependency_data[module.id] = module;
-    
-                                this.variable_to_dependencies[key].push(module);
+                                if(module != null) {
+
+                                    this.dependency_data[module.id] = module;
+        
+                                    this.variable_to_dependencies[key].push(module);
+
+                                }
     
                             }
     

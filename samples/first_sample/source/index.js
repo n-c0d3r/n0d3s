@@ -6,7 +6,7 @@ module.use({
 })
 .use([
 
-    "./styles/common"
+    "./**",
 
 ])
 .register_page();
