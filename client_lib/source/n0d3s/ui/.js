@@ -1,7 +1,8 @@
 
 module.use({
 
-    quick_query : "./quick_query"
+    quick_query : "./quick_query",
+    Style : "./style",
 
 });
 
@@ -10,7 +11,9 @@ module.use({
 const UI = {
 
     $,
-    $$
+    $$,
+
+    Style,
 
 };
 

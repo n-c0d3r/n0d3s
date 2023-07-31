@@ -168,6 +168,29 @@ class BuildTool {
 
 
 
+        corrected_file_path = path.resolve(
+            this.command.source_dir, 
+            to_file_path
+        );
+
+        if(fs.existsSync(corrected_file_path)){
+
+            if(fs.statSync(corrected_file_path).isDirectory())
+                corrected_file_path += "/.js";
+            else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != '.js')
+                corrected_file_path += '.js';
+
+        }
+        else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != '.js')
+            corrected_file_path += '.js';
+
+        if(fs.existsSync(path.normalize(corrected_file_path))){
+
+            return corrected_file_path;
+        }
+
+
+
         for(let additional_source_dir of this.additional_source_dirs){
 
             let corrected_file_path = path.resolve(
@@ -208,6 +231,16 @@ class BuildTool {
 
             let corrected_file_path = path.resolve(
                 path.dirname(from_file_path), 
+                to_dir_path
+            );
+    
+            if(fs.existsSync(corrected_file_path))
+                return corrected_file_path;
+
+
+
+            corrected_file_path = path.resolve(
+                build_tool.command.source_dir, 
                 to_dir_path
             );
     

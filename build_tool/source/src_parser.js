@@ -110,7 +110,7 @@ class SrcParser {
             
             ${(module.open_mode) ? "" : `window.n0d3s_cached_dependency_results["${module.id}"] = (()=>{`}            
             
-                ${(module.open_mode) ? "" : n0d3s_cached_dependency_results_js}
+                ${n0d3s_cached_dependency_results_js}
             
                 ${c}
 
