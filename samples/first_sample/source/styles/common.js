@@ -8,8 +8,7 @@ module.use({
 
     "./cyan_bg.js",
 
-])
-.use_open_mode();
+]);
 
 
 
