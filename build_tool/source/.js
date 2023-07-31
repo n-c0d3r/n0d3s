@@ -359,6 +359,8 @@ class BuildTool {
 
             use(obj){
 
+                if(obj == null) return this;
+
                 if(Array.isArray(obj)){
 
                     for(let to_path of obj){
