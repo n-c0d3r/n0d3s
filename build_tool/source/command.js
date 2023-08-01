@@ -4,6 +4,7 @@ class Command {
     static SOURCE_DIR_KEY = "s";
     static BUILD_DIR_KEY = "b";
     static SRC_INDEX_FILE_NAME_KEY = "sin";
+    static ADDITIONAL_SRC_DIRS_KEY = "as";
 
 
 
@@ -51,6 +52,15 @@ class Command {
     get src_index_file(){
 
         return `${this.source_dir}/${this.src_index_file_name}`;
+    }
+    get additional_source_dirs(){
+
+        if(Command.ADDITIONAL_SRC_DIRS_KEY in this.data)
+            return this.array(Command.ADDITIONAL_SRC_DIRS_KEY);
+
+        else return [
+            __dirname + "/../../client_lib/source" 
+        ];
     }
 
 

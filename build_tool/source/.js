@@ -30,12 +30,6 @@ class BuildTool {
         return this.#cli_argv;
     }
 
-    #additional_source_dirs;
-    get additional_source_dirs(){
-
-        return this.#additional_source_dirs;
-    }
-
     #command;
     get command() {
         
@@ -103,10 +97,6 @@ class BuildTool {
         this.#options = options || new Object();    
 
         this.#cli_argv = this.#options.cli_argv || [];   
-
-        this.#additional_source_dirs = this.#options.additional_source_dirs || [ 
-            __dirname + "/../../client_lib/source" 
-        ];
 
     }
 
@@ -191,7 +181,7 @@ class BuildTool {
 
 
 
-        for(let additional_source_dir of this.additional_source_dirs){
+        for(let additional_source_dir of this.command.additional_source_dirs){
 
             let corrected_file_path = path.resolve(
                 additional_source_dir, 
@@ -249,7 +239,7 @@ class BuildTool {
     
     
     
-            for(let additional_source_dir of build_tool.additional_source_dirs){
+            for(let additional_source_dir of build_tool.command.additional_source_dirs){
     
                 let corrected_file_path = path.resolve(
                     additional_source_dir, 
