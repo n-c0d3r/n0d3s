@@ -55,12 +55,13 @@ class Command {
     }
     get additional_source_dirs(){
 
-        if(Command.ADDITIONAL_SRC_DIRS_KEY in this.data)
-            return this.array(Command.ADDITIONAL_SRC_DIRS_KEY);
-
-        else return [
+        let default_value = [
             __dirname + "/../../core/source" 
         ];
+
+        if(Command.ADDITIONAL_SRC_DIRS_KEY in this.data)
+            return default_value.concat(this.array(Command.ADDITIONAL_SRC_DIRS_KEY));
+        else return default_value;
     }
 
 
