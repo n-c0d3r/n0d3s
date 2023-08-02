@@ -59,7 +59,7 @@ class Command {
             return this.array(Command.ADDITIONAL_SRC_DIRS_KEY);
 
         else return [
-            __dirname + "/../../client_lib/source" 
+            __dirname + "/../../core/source" 
         ];
     }
 
