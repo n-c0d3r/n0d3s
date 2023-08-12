@@ -37,6 +37,13 @@ function Element(tag) {
         return result;
     }
 
+    result.setHRef = function(url){
+
+        result.href = url;
+
+        return result;
+    }
+
     result.setStyle = function(styleConfig){
 
         for(let configName in styleConfig){
