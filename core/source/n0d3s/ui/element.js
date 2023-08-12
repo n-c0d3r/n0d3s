@@ -39,7 +39,7 @@ function Element(tag) {
 
     result.setHRef = function(url){
 
-        result.href = url;
+        result.setAttribute("href", url);
 
         return result;
     }
