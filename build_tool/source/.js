@@ -593,7 +593,7 @@ class BuildTool {
 
                     jsEmbeddedContent += m.cl_src_content;
                     if(m.cl_src_content == null)
-                        console.log(m);
+                        console.log(m.id);
 
                 }
 
