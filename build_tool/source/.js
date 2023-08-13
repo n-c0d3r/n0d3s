@@ -650,10 +650,10 @@ class BuildTool {
 
 
 
-        if(fs.existsSync(this.command.build_dir))
-            fs.rmSync(this.command.build_dir, { recursive: true, force: true });
+        //if(fs.existsSync(this.command.build_dir))
+        //    fs.rmSync(this.command.build_dir, { recursive: true, force: true });
 
-        fs.mkdirSync(this.command.build_dir);
+        //fs.mkdirSync(this.command.build_dir);
 
 
 
