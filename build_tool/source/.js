@@ -591,7 +591,7 @@ class BuildTool {
 
                 for(let m of modules){
 
-                    if(m.cl_src_content == null)
+                    if(m.cl_src_content != null)
                         jsEmbeddedContent += m.cl_src_content;
 
                 }
