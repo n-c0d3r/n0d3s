@@ -520,9 +520,6 @@ class BuildTool {
 
     saveScripts(){
 
-        if(this.command.js_embedded_build)
-            return;
-
         let scriptOutputDir = this.command.build_dir + '/scripts';
 
         if(!fs.existsSync(scriptOutputDir))
@@ -569,9 +566,7 @@ class BuildTool {
 
 
 
-            let htmlModuleContent = `
-            
-            `;
+            let htmlModuleContent = ``;
 
             if(!this.command.js_embedded_build) {
 
@@ -591,8 +586,9 @@ class BuildTool {
 
                 for(let m of modules){
 
-                    if(m.cl_src_content != null)
-                        jsEmbeddedContent += m.cl_src_content;
+                    let file_path = `${scriptOutputDir}/${m.id}`;
+
+                    jsEmbeddedContent += fs.readFileSync(file_path);
 
                 }
 
@@ -659,6 +655,9 @@ class BuildTool {
 
         this.saveScripts();
         this.savePages();
+
+        if(this.command.js_embedded_build)
+            fs.rmSync(this.command.build_dir + '/scripts', { recursive: true, force: true });
         
     }
 
