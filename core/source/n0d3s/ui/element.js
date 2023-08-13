@@ -25,6 +25,13 @@ function Element(tag) {
 
     result.setClass = function(name){
 
+        result.classList = name.split(' ');
+
+        return result;
+    }
+
+    result.appendClass = function(name){
+
         result.classList.add(...name.split(' '));
 
         return result;
