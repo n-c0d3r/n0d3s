@@ -532,7 +532,8 @@ class BuildTool {
 
             let js_content = module.cl_src_content;
 
-            js_content = UglifyJS.minify(js_content).code;
+            if(this.command.js_encode)
+                js_content = UglifyJS.minify(js_content).code;
 
             fs.writeFileSync(outputPath, js_content);
 
@@ -597,7 +598,10 @@ class BuildTool {
 
                 }
 
-                jsEmbeddedContent = `<script>${UglifyJS.minify(jsEmbeddedContent).code}</script>`;
+                if(this.command.js_encode)
+                    jsEmbeddedContent = `<script>${UglifyJS.minify(jsEmbeddedContent).code}</script>`;
+                else
+                    jsEmbeddedContent = `<script>${jsEmbeddedContent}</script>`;
 
             }
 
