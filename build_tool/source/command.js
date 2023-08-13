@@ -5,6 +5,7 @@ class Command {
     static BUILD_DIR_KEY = "b";
     static SRC_INDEX_FILE_NAME_KEY = "sin";
     static ADDITIONAL_SRC_DIRS_KEY = "as";
+    static JS_EMBEDDED_BUILD = "jsem";
 
 
 
@@ -62,6 +63,12 @@ class Command {
         if(Command.ADDITIONAL_SRC_DIRS_KEY in this.data)
             return default_value.concat(this.array(Command.ADDITIONAL_SRC_DIRS_KEY));
         else return default_value;
+    }
+    get js_embedded_build(){
+
+        if(Command.JS_EMBEDDED_BUILD in this.data)
+            return this.boolean(Command.JS_EMBEDDED_BUILD);
+        else return true;
     }
 
 
@@ -161,6 +168,10 @@ class Command {
     number(name){
 
         return Number(this.str(name));
+    }
+    boolean(name){
+
+        return (this.str(name) === 'true');
     }
 
 }

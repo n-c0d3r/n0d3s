@@ -520,6 +520,9 @@ class BuildTool {
 
     saveScripts(){
 
+        if(this.command.js_embedded_build)
+            return;
+
         let scriptOutputDir = this.command.build_dir + '/scripts';
 
         if(!fs.existsSync(scriptOutputDir))
@@ -570,9 +573,29 @@ class BuildTool {
             
             `;
 
-            for(let m of modules){
+            if(!this.command.js_embedded_build) {
 
-                htmlModuleContent += `<script src="${path.relative(path.dirname(outputPath), `${scriptOutputDir}/${m.id}`)}"></script>`;
+                for(let m of modules){
+
+                    htmlModuleContent += `<script src="${path.relative(path.dirname(outputPath), `${scriptOutputDir}/${m.id}`)}"></script>`;
+
+                }
+
+            }
+
+
+
+            let jsEmbeddedContent = ``;
+
+            if(this.command.js_embedded_build) {
+
+                for(let m of modules){
+
+                    jsEmbeddedContent += m.cl_src_content;
+
+                }
+
+                jsEmbeddedContent = `<script>${jsEmbeddedContent}</script>`;
 
             }
 
@@ -593,7 +616,7 @@ class BuildTool {
                 <body>
                     ${module.preInnerHTML || ""}
 
-                    ${htmlModuleContent}
+                    ${this.command.js_embedded_build ? jsEmbeddedContent : htmlModuleContent}
 
                     ${module.postInnerHTML || ""}
                 </body>

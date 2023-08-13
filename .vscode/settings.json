@@ -82,5 +82,6 @@
         "xutility": "cpp",
         "array": "cpp",
         "semaphore": "cpp"
-    }
+    },
+    "liveServer.settings.port": 5501
 }
