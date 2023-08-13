@@ -6,6 +6,7 @@ class Command {
     static SRC_INDEX_FILE_NAME_KEY = "sin";
     static ADDITIONAL_SRC_DIRS_KEY = "as";
     static JS_EMBEDDED_BUILD = "jsem";
+    static JS_ENCODE = "jsen";
 
 
 
@@ -68,6 +69,12 @@ class Command {
 
         if(Command.JS_EMBEDDED_BUILD in this.data)
             return this.boolean(Command.JS_EMBEDDED_BUILD);
+        else return true;
+    }
+    get js_encode(){
+
+        if(Command.JS_ENCODE in this.data)
+            return this.boolean(Command.JS_ENCODE);
         else return true;
     }
 

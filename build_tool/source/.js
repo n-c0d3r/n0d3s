@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const uuid = require('uuid');
 const fse = require('fs-extra');
+var UglifyJS = require("uglify-js");
 
 const { Queue } = require('@datastructures-js/queue');
 
@@ -529,7 +530,11 @@ class BuildTool {
 
             let outputPath = `${scriptOutputDir}/${module.id}`;
 
-            fs.writeFileSync(outputPath, module.cl_src_content);
+            let js_content = module.cl_src_content;
+
+            js_content = UglifyJS.minify(js_content).code;
+
+            fs.writeFileSync(outputPath, js_content);
 
         }
 
@@ -592,7 +597,7 @@ class BuildTool {
 
                 }
 
-                jsEmbeddedContent = `<script>${jsEmbeddedContent}</script>`;
+                jsEmbeddedContent = `<script>${UglifyJS.minify(jsEmbeddedContent).code}</script>`;
 
             }
 
