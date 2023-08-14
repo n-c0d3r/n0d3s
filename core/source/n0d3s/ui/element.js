@@ -105,10 +105,7 @@ function Element(tag) {
 
                 try{
 
-                    let spanE = Element('span');
-                    spanE.textContent = child;
-
-                    result.appendChild(spanE);
+                    result.innerHTML += child;
 
                 }
                 catch{
@@ -147,10 +144,7 @@ function Element(tag) {
 
                 try{
 
-                    let spanE = Element('span');
-                    spanE.textContent = child;
-
-                    result.appendChild(spanE);
+                    result.innerHTML += child;
 
                 }
                 catch{
