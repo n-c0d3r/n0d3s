@@ -288,15 +288,26 @@ function Element(tag) {
 
         effect.init(result);
 
+        let current_time = performance.now();
+        let last_time = current_time;
+
         let warped_update = ()=>{
 
-            effect.update(result);
+            current_time = performance.now();
 
-            setTimeout(warped_update, duration);
+            if(current_time - last_time >= duration) {
+
+                effect.update(result);
+
+                last_time = current_time;
+
+            }
+
+            window.requestAnimationFrame(warped_update);
 
         };
 
-        warped_update();
+        window.requestAnimationFrame(warped_update);
 
         return result;
     }
