@@ -87,7 +87,7 @@ function Element(tag) {
     result.appendInner = function(...childs){
 
         return result.appendInnerArray(childs);
-    }
+    } 
 
     result.appendInnerArray = function(childsArray){
         
