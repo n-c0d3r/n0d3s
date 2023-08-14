@@ -160,6 +160,33 @@ function Element(tag) {
         return result;
     }
 
+    result.$ = function(query){
+
+        return result.querySelector(query);
+    }
+    result.$$ = function(query){
+
+        return result.querySelectorAll(query);
+    }
+
+    result.$call = function(query, name, ...params){
+
+        let child = result.$(query);
+
+        child[name](...params);
+
+        return result;
+    }
+    result.$$call = function(query, name, ...params){
+
+        let childs = result.$$(query);
+
+        for(let child of childs)
+            child[name](...params);
+
+        return result;
+    }
+
     return result;
 }
 
