@@ -160,6 +160,88 @@ function Element(tag) {
         return result;
     }
 
+    result.appendTextContent = function(...childs){
+
+        return result.appendTextContentArray(childs);
+    }
+
+    result.appendTextContentArray = function(childsArray){
+        
+        for(let childName in childsArray){
+
+            let child = childsArray[childName];
+
+            try {
+
+                result.appendChild(child);
+
+            }
+            catch
+            {
+
+                try{
+
+                    let spanE = Element('span');
+                    spanE.textContent = child;
+
+                    result.appendChild(spanE);
+
+                }
+                catch{
+
+
+
+                }
+
+            }
+
+        }
+
+        return result;
+    }
+
+    result.setTextContent = function(...childs){
+
+        return result.setTextContentArray(childs);
+    }
+
+    result.setTextContentArray = function(childsArray){
+
+        result.innerHTML = "";
+        
+        for(let childName in childsArray){
+
+            let child = childsArray[childName];
+
+            try {
+
+                result.appendChild(child);
+
+            }
+            catch
+            {
+
+                try{
+
+                    let spanE = Element('span');
+                    spanE.textContent = child;
+
+                    result.appendChild(spanE);
+
+                }
+                catch{
+
+
+
+                }
+
+            }
+
+        }
+
+        return result;
+    }
+
     result.$ = function(query, callback){
 
         let element = result.querySelector(query);
