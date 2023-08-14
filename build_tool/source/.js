@@ -433,6 +433,9 @@ class BuildTool {
 
             text(obj){
 
+                if(build_tool.command.resource_dirs.length == 0)
+                    throw new Error(`cant import text because there is no resource directory`);
+
                 if(obj == null) return this;
 
                 for(let data_name in obj){
@@ -467,6 +470,9 @@ class BuildTool {
             },
 
             json(obj){
+
+                if(build_tool.command.resource_dirs.length == 0)
+                    throw new Error(`cant import json because there is no resource directory`);
 
                 if(obj == null) return this;
 
