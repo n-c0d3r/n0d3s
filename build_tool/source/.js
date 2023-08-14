@@ -441,6 +441,9 @@ class BuildTool {
 
                         let file_path = path.resolve(resource_dir_path, obj[data_name]);
 
+                        if(path.extname(file_path) != ".txt")
+                            file_path += ".txt";
+
                         if(fs.existsSync(file_path)){
 
                             let data = fs.readFileSync(file_path).toString();
@@ -467,6 +470,9 @@ class BuildTool {
                     for(let resource_dir_path of build_tool.command.resource_dirs){
 
                         let file_path = path.resolve(resource_dir_path, obj[data_name]);
+
+                        if(path.extname(file_path) != ".json")
+                            file_path += ".json";
 
                         if(fs.existsSync(file_path)){
 

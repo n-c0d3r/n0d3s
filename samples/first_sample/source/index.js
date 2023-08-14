@@ -11,12 +11,12 @@ module.use({
 ])
 .text({
 
-    content: "content.txt",
+    content: "content",
     
 })
 .json({
 
-    data: "data.json",
+    data: "data",
     
 })
 .register_page();
