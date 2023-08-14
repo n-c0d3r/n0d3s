@@ -160,29 +160,40 @@ function Element(tag) {
         return result;
     }
 
-    result.$ = function(query){
+    result.$ = function(query, callback){
 
-        return result.querySelector(query);
+        let element = result.querySelector(query);
+
+        return element;
     }
-    result.$$ = function(query){
+    result.$$ = function(query, callback){
 
-        return result.querySelectorAll(query);
+        let elements = result.querySelectorAll(query);
+
+        for(let element of elements) {
+
+            callback(element);
+
+        }
+
+        return elements;
     }
 
     result.$call = function(query, name, ...params){
 
-        let child = result.$(query);
-
-        child[name](...params);
+        let child = result.$(
+            query, 
+            element => element[name](...params)
+        );
 
         return result;
     }
     result.$$call = function(query, name, ...params){
 
-        let childs = result.$$(query);
-
-        for(let child of childs)
-            child[name](...params);
+        let childs = result.$$(
+            query, 
+            element => element[name](...params)
+        );
 
         return result;
     }
