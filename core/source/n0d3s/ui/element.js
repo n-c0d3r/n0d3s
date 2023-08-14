@@ -246,7 +246,8 @@ function Element(tag) {
 
         let element = result.querySelector(query);
 
-        callback(element);
+        if(callback != null)
+            callback(element);
 
         return result;
     }
@@ -254,11 +255,12 @@ function Element(tag) {
 
         let elements = result.querySelectorAll(query);
 
-        for(let element of elements) {
+        if(callback != null)
+            for(let element of elements) {
 
-            callback(element);
+                callback(element);
 
-        }
+            }
 
         return result;
     }
