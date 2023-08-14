@@ -282,6 +282,23 @@ function Element(tag) {
         return result;
     }
 
+    result.effect = function(init, update, duration){
+
+        init(result);
+
+        let warped_update = ()=>{
+
+            update(result);
+
+            setTimeout(warped_update, duration);
+
+        };
+
+        warped_update();
+
+        return result;
+    }
+
     return result;
 }
 
