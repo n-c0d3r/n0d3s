@@ -164,6 +164,8 @@ function Element(tag) {
 
         let element = result.querySelector(query);
 
+        callback(element);
+
         return element;
     }
     result.$$ = function(query, callback){
