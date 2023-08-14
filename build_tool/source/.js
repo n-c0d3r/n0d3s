@@ -453,6 +453,11 @@ class BuildTool {
                             break;
 
                         }
+                        else{
+
+                            throw new Error(`import ${file_path} failed`);
+
+                        }
     
                     }
 
@@ -481,6 +486,11 @@ class BuildTool {
                             this.json_objects[data_name] = data;
 
                             break;
+
+                        }
+                        else{
+
+                            throw new Error(`import ${file_path} failed`);
 
                         }
     
