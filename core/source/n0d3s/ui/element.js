@@ -282,13 +282,13 @@ function Element(tag) {
         return result;
     }
 
-    result.effect = function(init, update, duration){
+    result.applyEffect = function(effect, duration){
 
-        init(result);
+        effect.init(result);
 
         let warped_update = ()=>{
 
-            update(result);
+            effect.update(result);
 
             setTimeout(warped_update, duration);
 
