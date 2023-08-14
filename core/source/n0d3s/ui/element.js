@@ -224,7 +224,7 @@ function Element(tag) {
                 try{
 
                     let spanE = Element('span');
-                    spanE.textContent = child.replaceAll(' ', '&nbsp;');
+                    spanE.innerHTML = child.replaceAll(' ', '&nbsp;');
 
                     result.appendChild(spanE);
 
