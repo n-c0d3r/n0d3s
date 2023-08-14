@@ -248,7 +248,7 @@ function Element(tag) {
 
         callback(element);
 
-        return element;
+        return result;
     }
     result.$$ = function(query, callback){
 
@@ -260,7 +260,7 @@ function Element(tag) {
 
         }
 
-        return elements;
+        return result;
     }
 
     result.$call = function(query, name, ...params){
