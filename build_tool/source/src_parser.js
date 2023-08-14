@@ -58,7 +58,6 @@ class SrcParser {
 
 
         let n0d3s_cached_dependency_results_js = ``;
-
         for(let variable_name in module.variable_to_dependencies){
 
             let dependencies = module.variable_to_dependencies[variable_name];
@@ -90,13 +89,39 @@ class SrcParser {
 
 
 
+        let n0d3s_text_objects = ``;
+        for(let text_name in module.text_objects){
+
+            n0d3s_text_objects += `var ${text_name} = ${'`' + module.text_objects[text_name].replaceAll('`', "`" + " + '`' + " + "`") + '`'};`;
+
+        }
+
+
+
+        let n0d3s_json_objects = ``;
+        for(let json_name in module.json_objects){
+
+            n0d3s_json_objects += `var ${json_name} = ${
+                'JSON.parse('
+                + '`' 
+                + JSON.stringify(module.json_objects[json_name]).replaceAll('`', "`" + " + '`' + " + "`") 
+                + '`'
+                + ')'
+            };`;
+
+        }
+
+
+
         return `
 
             var module = {
 
                 use() { return module; },
                 register_page() { return module; },
-                use_open_mode() { return module; }
+                use_open_mode() { return module; },
+                text() { return module; },
+                json() { return module; },
 
             };
             
@@ -111,7 +136,10 @@ class SrcParser {
             ${(module.open_mode) ? "" : `window.n0d3s_cached_dependency_results["${module.id}"] = (()=>{`}            
             
                 ${n0d3s_cached_dependency_results_js}
-            
+
+                ${n0d3s_text_objects}
+                ${n0d3s_json_objects}
+                
                 ${c}
 
             ${(module.open_mode) ? "" : `})();`}

@@ -333,6 +333,9 @@ class BuildTool {
             is_page: false,
             open_mode: false,
 
+            text_objects: new Object(),
+            json_objects: new Object(), 
+
             import(file_path){
 
                 let corrected_file_path = build_tool.search_for_corrected_path(this.src_file, file_path);
@@ -426,6 +429,60 @@ class BuildTool {
                 }
 
                 return this;             
+            },
+
+            text(obj){
+
+                if(obj == null) return this;
+
+                for(let data_name in obj){
+
+                    for(let resource_dir_path of build_tool.command.resource_dirs){
+
+                        let file_path = path.resolve(resource_dir_path, obj[data_name]);
+
+                        if(fs.existsSync(file_path)){
+
+                            let data = fs.readFileSync(file_path).toString();
+
+                            this.text_objects[data_name] = data;
+
+                            break;
+
+                        }
+    
+                    }
+
+                }
+
+                return this;
+            },
+
+            json(obj){
+
+                if(obj == null) return this;
+
+                for(let data_name in obj){
+
+                    for(let resource_dir_path of build_tool.command.resource_dirs){
+
+                        let file_path = path.resolve(resource_dir_path, obj[data_name]);
+
+                        if(fs.existsSync(file_path)){
+
+                            let data = JSON.parse(fs.readFileSync(file_path).toString());
+
+                            this.json_objects[data_name] = data;
+
+                            break;
+
+                        }
+    
+                    }
+
+                }                
+
+                return this;
             },
 
             register_page(preInnerHTML = "", postInnerHTML = ""){
@@ -641,21 +698,14 @@ class BuildTool {
 
     build(){
 
+        console.log("Start build project");
+
         if(!this.earlyCheckForBuilding()) {
 
             throw new Error("Early check for building failed!");
 
             return false;
         }
-
-
-
-        //if(fs.existsSync(this.command.build_dir))
-        //    fs.rmSync(this.command.build_dir, { recursive: true, force: true });
-
-        //fs.mkdirSync(this.command.build_dir);
-
-
 
         this.#index_module = this.importSrc(this.command.src_index_file);
 
@@ -667,6 +717,8 @@ class BuildTool {
 
         if(this.command.js_embedded_build)
             fs.rmSync(this.command.build_dir + '/scripts', { recursive: true, force: true });
+
+        console.log("Build project done");
         
     }
 

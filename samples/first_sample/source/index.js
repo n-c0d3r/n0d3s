@@ -9,9 +9,23 @@ module.use({
     "./**",
 
 ])
+.text({
+
+    content: "content.txt",
+    
+})
+.json({
+
+    data: "data.json",
+    
+})
 .register_page();
 
 
 
 $('body')
-.appendInner("hello world");
+.appendInner(content.replaceAll('\n', '</br>'));
+
+
+
+console.log(data);

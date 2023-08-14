@@ -7,6 +7,7 @@ class Command {
     static ADDITIONAL_SRC_DIRS_KEY = "as";
     static JS_EMBEDDED_BUILD = "jsem";
     static JS_ENCODE = "jsen";
+    static RESOURCE_DIRS_KEY = "res";
 
 
 
@@ -76,6 +77,12 @@ class Command {
         if(Command.JS_ENCODE in this.data)
             return this.boolean(Command.JS_ENCODE);
         else return true;
+    }
+    get resource_dirs(){
+
+        if(Command.RESOURCE_DIRS_KEY in this.data)
+            return this.array(Command.RESOURCE_DIRS_KEY);
+        else return [];
     }
 
 

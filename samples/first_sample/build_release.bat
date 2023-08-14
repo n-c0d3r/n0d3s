@@ -7,4 +7,4 @@ if not exist %BUILD_DIR% (
     mkdir %BUILD_DIR%
 )
 
-node %0/../../../build.js -s %0/../source -b %BUILD_DIR% %*
+node %0/../../../build.js -s %0/../source -b %BUILD_DIR% -res %0/../resources -jsen true -jsem true %*
