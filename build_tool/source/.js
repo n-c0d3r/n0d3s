@@ -456,13 +456,10 @@ class BuildTool {
                             break;
 
                         }
-                        else{
-
-                            throw new Error(`import ${file_path} failed`);
-
-                        }
     
                     }
+
+                    throw new Error(`import ${data_name} failed`);
 
                 }
 
@@ -494,13 +491,10 @@ class BuildTool {
                             break;
 
                         }
-                        else{
-
-                            throw new Error(`import ${file_path} failed`);
-
-                        }
     
                     }
+
+                    throw new Error(`import ${data_name} failed`);
 
                 }                
 
