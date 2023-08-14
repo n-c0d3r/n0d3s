@@ -459,7 +459,8 @@ class BuildTool {
     
                     }
 
-                    throw new Error(`import ${data_name} failed`);
+                    if (!(data_name in this.text_objects))
+                        throw new Error(`import ${data_name} failed`);
 
                 }
 
@@ -494,7 +495,8 @@ class BuildTool {
     
                     }
 
-                    throw new Error(`import ${data_name} failed`);
+                    if (!(data_name in this.text_objects))
+                        throw new Error(`import ${data_name} failed`);
 
                 }                
 
