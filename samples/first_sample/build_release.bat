@@ -1,6 +1,6 @@
 @echo off
 
-set BUILD_DIR=%0/../../../build/samples/first_sample
+set BUILD_DIR=%0/../../../build/release/samples/first_sample
 
 if not exist %BUILD_DIR% (
     rem
