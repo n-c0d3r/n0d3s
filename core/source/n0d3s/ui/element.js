@@ -302,15 +302,18 @@ function Element(tag) {
 
             current_time = performance.now();
 
+            let continue_effect = false;
+
             if(current_time - last_time >= duration) {
 
-                effect.update(result);
+                continue_effect = effect.update(result);
 
                 last_time = current_time;
 
             }
 
-            window.requestAnimationFrame(warped_update);
+            if(continue_effect)
+                window.requestAnimationFrame(warped_update);
 
         };
 
