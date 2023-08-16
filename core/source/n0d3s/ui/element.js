@@ -302,7 +302,7 @@ function Element(tag) {
 
             current_time = performance.now();
 
-            let continue_effect = false;
+            let continue_effect = true;
 
             if(current_time - last_time >= duration) {
 
