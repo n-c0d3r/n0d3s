@@ -313,7 +313,7 @@ function Element(tag) {
             }
 
             if(continue_effect)
-                window.requestAnimationFrame(warped_update);
+                window.requestAnimationFrame(warped_update); 
 
         };
 
