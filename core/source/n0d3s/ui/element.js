@@ -39,7 +39,7 @@ function Element(tag) {
 
     result.pushBackClass = function(name){
         
-        result.classList = name.split(' ').concat(...result.classList);
+        result.classList = name.split(' ').concat(...result.classList).join(' ');
 
         return result;
     }
