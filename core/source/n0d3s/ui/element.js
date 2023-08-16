@@ -37,6 +37,13 @@ function Element(tag) {
         return result;
     }
 
+    result.pushBackClass = function(name){
+        
+        result.classList = name.split(' ').add(...result.classList);
+
+        return result;
+    }
+
     result.setId = function(id){
 
         result.id = id;
