@@ -18,7 +18,7 @@ function $(query) {
         
     }
 
-    if(result == document.querySelector('title') && result.n0d3sEmbedded != true){
+    if(query == 'title' && result.n0d3sEmbedded != true){
 
         Element('title');
         
