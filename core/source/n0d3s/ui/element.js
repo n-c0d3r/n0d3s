@@ -16,7 +16,7 @@ function Element(tag) {
     }
     else if(tag == "title"){
 
-        result = document.title;
+        result = document.querySelector('title');
 
     }
     else {
