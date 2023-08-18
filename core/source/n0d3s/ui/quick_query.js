@@ -20,6 +20,7 @@ function $(query) {
 
     if(query == 'title' && result.n0d3sEmbedded != true){
 
+        console.log('title');
         Element('title');
         
     }
