@@ -693,6 +693,7 @@ class BuildTool {
                     <meta http-equiv='pragma' content='no-cache'>
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <!--<script src="${path.relative(path.dirname(outputPath), clientLibDir)}/n0d3s.js"></script>-->
+                    <title></title>
                 </head>
                 <body>
                     ${module.preInnerHTML || ""}
