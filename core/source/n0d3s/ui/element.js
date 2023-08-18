@@ -14,6 +14,11 @@ function Element(tag) {
         result = document.body;
 
     }
+    else if(tag == "title"){
+
+        result = document.title;
+
+    }
     else {
         
 
