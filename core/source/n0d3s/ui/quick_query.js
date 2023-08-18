@@ -18,6 +18,12 @@ function $(query) {
         
     }
 
+    if(result == document.title && result.n0d3sEmbedded != true){
+
+        Element('title');
+        
+    }
+
     return result;
 }
 
