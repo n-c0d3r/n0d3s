@@ -495,7 +495,7 @@ class BuildTool {
     
                     }
 
-                    if (!(data_name in this.text_objects))
+                    if (!(data_name in this.json_objects))
                         throw new Error(`import ${data_name} failed`);
 
                 }                
