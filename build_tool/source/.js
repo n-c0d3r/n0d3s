@@ -707,7 +707,7 @@ class BuildTool {
             `;
 
             if(!fs.existsSync(path.dirname(outputPath)))
-                fs.mkdirSync(path.dirname(outputPath));
+                fs.mkdirSync(path.dirname(outputPath), {recursive: true});
 
             fs.writeFileSync(outputPath, htmlContent);
 
