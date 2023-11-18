@@ -817,7 +817,7 @@ class BuildTool {
             if(!module.is_page)
                 continue;
 
-            let relative_path = path.normalize(path.relative(this.command.source_dir, module.src_file));
+            let relative_path = path.normalize(path.relative(this.command.source_dir, module.src_file || (module.src_dir + '/' + module.id)));
 
             relative_path = relative_path.slice(0, relative_path.length - 2) + 'html';
 
