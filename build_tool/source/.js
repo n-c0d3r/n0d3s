@@ -385,6 +385,7 @@ class BuildTool {
 
             text_objects: new Object(),
             json_objects: new Object(), 
+            data_objects: new Object(), 
 
             external_js_array: [],
             external_js_module_array: [],
@@ -572,6 +573,23 @@ class BuildTool {
                 }
 
                 return this;
+            },
+
+            add_data(name, value){
+
+                this.data_objects[name] = value;
+
+                return this;
+            },
+            remove_data(name) {
+
+                delete this.data_objects[name];
+
+                return this;
+            },
+            is_has_data(name) {
+
+                return name in this.data_objects;
             },
 
             json(obj, options = new Object()){

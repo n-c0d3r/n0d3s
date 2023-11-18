@@ -113,6 +113,21 @@ class SrcParser {
 
 
 
+        let n0d3s_data_objects = ``;
+        for(let data_name in module.data_objects){
+
+            n0d3s_data_objects += `var ${data_name} = ${
+                'JSON.parse('
+                + '`' 
+                + JSON.stringify(module.data_objects[data_name]).replaceAll('`', "`" + " + '`' + " + "`") 
+                + '`'
+                + ')'
+            };`;
+
+        }
+
+
+
         return `
 
             var module = {
@@ -134,6 +149,10 @@ class SrcParser {
 
                 path_query() { return []; },
 
+                add_data() { return module; },
+                remove_data() { return module; },
+                is_has_data() { return false; },
+
             };
             
             var build_state = false;
@@ -150,6 +169,7 @@ class SrcParser {
 
                 ${n0d3s_text_objects}
                 ${n0d3s_json_objects}
+                ${n0d3s_data_objects}
                 
                 ${c}
 
