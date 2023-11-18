@@ -636,6 +636,12 @@ class BuildTool {
 
                 is_multiple = (modules.length > 1);
 
+                for(let m of modules){
+
+                    this.dependent_modules[m.id] = m;
+
+                }
+
                 this.variable_to_dependencies[variable_name] = modules;
                 this.variable_to_dependencies[variable_name].is_multiple = is_multiple;
 
