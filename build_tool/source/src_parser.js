@@ -92,7 +92,7 @@ class SrcParser {
         let n0d3s_text_objects = ``;
         for(let text_name in module.text_objects){
 
-            n0d3s_text_objects += `var ${text_name} = ${'`' + module.text_objects[text_name].replaceAll('`', "`" + " + '`' + " + "`") + '`'};`;
+            n0d3s_text_objects += `var ${text_name} = ${'decodeURIComponent(`' + encodeURIComponent(module.text_objects[text_name]) + '`)'};`;
 
         }
 
