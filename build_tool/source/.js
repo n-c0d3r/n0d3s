@@ -566,6 +566,13 @@ class BuildTool {
                 return this;
             },
 
+            exe(callback){
+
+                callback();
+
+                return this;
+            },
+
             register_page(preInnerHTML = "", postInnerHTML = ""){
 
                 this.is_page = true;

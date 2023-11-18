@@ -123,6 +123,7 @@ class SrcParser {
                 use_open_mode() { return module; },
                 text() { return module; },
                 json() { return module; },
+                exe() { return module; },
 
             };
             
