@@ -117,6 +117,7 @@ class SrcParser {
 
             var module = {
 
+                use_all() { return module; },
                 use() { return module; },
                 register_page() { return module; },
                 use_open_mode() { return module; },
