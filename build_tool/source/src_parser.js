@@ -102,11 +102,11 @@ class SrcParser {
         for(let json_name in module.json_objects){
 
             n0d3s_json_objects += `var ${json_name} = ${
-                'JSON.parse('
+                'JSON.parse(decodeURIComponent('
                 + '`' 
-                + JSON.stringify(module.json_objects[json_name]).replaceAll('`', "`" + " + '`' + " + "`") 
+                + encodeURIComponent(JSON.stringify(module.json_objects[json_name]))
                 + '`'
-                + ')'
+                + '))'
             };`;
 
         }
@@ -117,11 +117,11 @@ class SrcParser {
         for(let data_name in module.data_objects){
 
             n0d3s_data_objects += `var ${data_name} = ${
-                'JSON.parse('
+                'JSON.parse(decodeURIComponent('
                 + '`' 
-                + JSON.stringify(module.data_objects[data_name]).replaceAll('`', "`" + " + '`' + " + "`") 
+                + encodeURIComponent(JSON.stringify(module.data_objects[data_name]))
                 + '`'
-                + ')'
+                + '))'
             };`;
 
         }
