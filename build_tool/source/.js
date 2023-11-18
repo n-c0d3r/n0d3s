@@ -364,12 +364,6 @@ class BuildTool {
 
         let func = new Function(parsed_src_content);
 
-        let id = null;
-        if(src_file != null)
-            id = file_path_to_id(src_file);
-        else
-            id = uuid.v4().replaceAll("-", "_");
-
         func = func.bind({
 
             parsed_src_content: parsed_src_content,
@@ -387,7 +381,7 @@ class BuildTool {
             src_content: src_content,
             build_tool: build_tool, 
             context: build_tool.context, 
-            id: id,
+            id: uuid.v4().replaceAll("-", "_"),
 
             is_virtual: is_virtual,
 
