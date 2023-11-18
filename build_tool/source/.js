@@ -134,7 +134,7 @@ class BuildTool {
         return true;
     }
 
-    search_for_corrected_path(from_file_path, to_file_path, file_extension, additional_dirs) {
+    search_for_corrected_path(from_file_path, to_file_path, file_extension, additional_dirs, entry_prefix) {
 
         let corrected_file_path = path.resolve(
             path.dirname(from_file_path), 
@@ -318,7 +318,7 @@ class BuildTool {
 
         for(let parsed_path of result){
 
-            let corrected_path = build_tool.search_for_corrected_path(from_file_path, parsed_path, file_extension, additional_dirs);
+            let corrected_path = build_tool.search_for_corrected_path(from_file_path, parsed_path, file_extension, additional_dirs, entry_prefix);
 
             if(path.resolve(corrected_path) != path.resolve(from_file_path))
                 corrected_result.push(corrected_path);
