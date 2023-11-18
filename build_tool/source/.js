@@ -944,7 +944,7 @@ class BuildTool {
 
                 for(let m of modules){
 
-                    let file_path = `${scriptOutputDir}/${m.id}`;
+                    let file_path = m.script_build_path();
 
                     jsEmbeddedContent += fs.readFileSync(file_path);
 
