@@ -184,7 +184,7 @@ class SrcParser {
                 ${n0d3s_json_objects}
                 ${n0d3s_data_objects}
                 
-                ${module.is_auto_return ? `return decodeURIComponent("${encodeURIComponent(JSON.stringify(module.auto_return_object))}")` : c}
+                ${module.is_auto_return ? `module; return decodeURIComponent("${encodeURIComponent(JSON.stringify(module.auto_return_object))}")` : c}
 
             ${(module.open_mode) ? "" : `})();`}
         
