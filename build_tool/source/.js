@@ -835,7 +835,18 @@ class BuildTool {
 
         });
 
-        return func(true);
+        try {
+
+            return func(true);
+        }
+        catch(err) {
+
+            console.error(`${func.src_dir} :: ${func.non_virtual_src_file() || func.id} -> (): failure error`);
+
+            throw err;
+
+            return null;
+        }
     }
 
     sortedDependencies(module) {
