@@ -61,6 +61,12 @@ class BuildTool {
         return this.#modules;
     }
 
+    #imported_modules;
+    get imported_modules() {
+        
+        return this.#imported_modules;
+    }
+
 
 
     constructor(options){
@@ -90,6 +96,8 @@ class BuildTool {
         });
 
         this.#modules = [];
+
+        this.#imported_modules = new Object();
 
     }
 
@@ -333,9 +341,20 @@ class BuildTool {
 
     import_module(src_file){
 
+        let resolved_file = path.resolve(src_file);
+
+        if(resolved_file in this.#imported_modules) {
+
+            return this.#imported_modules[resolved_file];
+        }
+
         let src_content = fs.readFileSync(src_file).toString();
 
-        return this.create_module(src_content, path.dirname(src_file), src_file);
+        let module = this.create_module(src_content, path.dirname(src_file), src_file);
+
+        this.#imported_modules[resolved_file] = module;
+
+        return module;
     }
     create_module(src_content, src_dir, src_file){
 
