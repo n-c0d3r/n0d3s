@@ -367,7 +367,7 @@ class BuildTool {
 
             use_all() {
 
-                use([
+                this.use([
 
                     "./**",
 
@@ -375,7 +375,7 @@ class BuildTool {
 
                 return this;
             },
-            
+
             use(obj){
 
                 if(obj == null) return this;
