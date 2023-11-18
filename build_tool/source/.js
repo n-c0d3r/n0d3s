@@ -214,7 +214,7 @@ class BuildTool {
         return null;
     }
 
-    parse_use_path(from_file_path, to_path){
+    parse_path_query(from_file_path, to_path, file_extension, additional_dirs){
 
         let build_tool = this;
 
@@ -240,7 +240,7 @@ class BuildTool {
     
     
     
-            for(let additional_source_dir of build_tool.command.additional_source_dirs){
+            for(let additional_source_dir of additional_dirs){
     
                 let corrected_file_path = path.resolve(
                     additional_source_dir, 
@@ -255,6 +255,7 @@ class BuildTool {
         }
 
         let result = [];
+        result.is_multiple = false;
         
         while(to_path[to_path.length - 1] == ' '){
 
@@ -274,14 +275,16 @@ class BuildTool {
 
                 if(fs.statSync(item_path).isDirectory()){
 
-                    if(fs.existsSync(item_path + '/.js'))
+                    if(fs.existsSync(item_path + `/.${file_extension}`))
                         result.push(item_path);
 
                 }
-                else if(path.extname(item) == '.js')
+                else if(path.extname(item) == `.${file_extension}`)
                     result.push(item_path);
 
             }
+
+            result.is_multiple = true;
 
         }
         else if(to_path[to_path.length - 1] == '*'){
@@ -294,10 +297,12 @@ class BuildTool {
 
                 let item_path = `${dir_path}/${item}`;
 
-                if(fs.statSync(item_path).isFile() && path.extname(item) == '.js')
+                if(fs.statSync(item_path).isFile() && path.extname(item) == `.${file_extension}`)
                     result.push(item_path);
 
             }
+
+            result.is_multiple = true;
 
         }
         else{
@@ -359,9 +364,12 @@ class BuildTool {
 
                     for(let to_path of obj){
 
-                        let parsed_paths = build_tool.parse_use_path(this.src_file, to_path);
+                        let parsed_paths = build_tool.parse_path_query(this.src_file, to_path, 'js', build_tool.command.additional_source_dirs);
 
-                        if(parsed_paths.length == 1){
+                        if(parsed_paths.length == 0)
+                            throw new Error(`import ${to_path} failed`);
+
+                        if(!parsed_paths.is_multiple){
 
                             let module = this.import(parsed_paths[0]);
 
@@ -389,11 +397,14 @@ class BuildTool {
 
                     for(let key in obj){
     
-                        let parsed_paths = build_tool.parse_use_path(this.src_file, obj[key]);
+                        let parsed_paths = build_tool.parse_path_query(this.src_file, obj[key], 'js', build_tool.command.additional_source_dirs);
+
+                        if(parsed_paths.length == 0)
+                            throw new Error(`import ${to_path} failed`);
     
                         this.variable_to_dependencies[key] = [];
     
-                        if(parsed_paths.length == 1){
+                        if(!parsed_paths.is_multiple){
     
                             let module = this.import(parsed_paths[0]);
     
@@ -438,31 +449,61 @@ class BuildTool {
 
                 if(obj == null) return this;
 
-                for(let data_name in obj){
+                for(let key in obj){
+    
+                    let parsed_paths = build_tool.parse_path_query(this.src_file, obj[key], 'txt', build_tool.command.resource_dirs);
 
-                    for(let resource_dir_path of build_tool.command.resource_dirs){
+                    if(parsed_paths.length == 0)
+                        throw new Error(`import ${key} failed`);
 
-                        let file_path = path.resolve(resource_dir_path, obj[data_name]);
+                    if(!parsed_paths.is_multiple){
 
-                        if(path.extname(file_path) != ".txt")
-                            file_path += ".txt";
+                        let data = fs.readFileSync(parsed_paths[0]).toString();
 
-                        if(fs.existsSync(file_path)){
+                        this.text_objects[key] = data;
 
-                            let data = fs.readFileSync(file_path).toString();
+                    }
+                    else{
 
-                            this.text_objects[data_name] = data;
+                        this.text_objects[key] = [];
 
-                            break;
+                        for(let parsed_path of parsed_paths){
+
+                            let data = fs.readFileSync(parsed_path).toString();
+    
+                            this.text_objects[key].push(data);
 
                         }
-    
+
                     }
 
-                    if (!(data_name in this.text_objects))
-                        throw new Error(`import ${data_name} failed`);
-
                 }
+
+                // for(let data_name in obj){
+
+                //     for(let resource_dir_path of build_tool.command.resource_dirs){
+
+                //         let file_path = path.resolve(resource_dir_path, obj[data_name]);
+
+                //         if(path.extname(file_path) != ".txt")
+                //             file_path += ".txt";
+
+                //         if(fs.existsSync(file_path)){
+
+                //             let data = fs.readFileSync(file_path).toString();
+
+                //             this.text_objects[data_name] = data;
+
+                //             break;
+
+                //         }
+    
+                //     }
+
+                //     if (!(data_name in this.text_objects))
+                //         throw new Error(`import ${data_name} failed`);
+
+                // }
 
                 return this;
             },
@@ -474,31 +515,61 @@ class BuildTool {
 
                 if(obj == null) return this;
 
-                for(let data_name in obj){
+                for(let key in obj){
+    
+                    let parsed_paths = build_tool.parse_path_query(this.src_file, obj[key], 'json', build_tool.command.resource_dirs);
 
-                    for(let resource_dir_path of build_tool.command.resource_dirs){
+                    if(parsed_paths.length == 0)
+                        throw new Error(`import ${key} failed`);
 
-                        let file_path = path.resolve(resource_dir_path, obj[data_name]);
+                    if(!parsed_paths.is_multiple){
 
-                        if(path.extname(file_path) != ".json")
-                            file_path += ".json";
+                        let data = JSON.parse(fs.readFileSync(parsed_paths[0]).toString());
 
-                        if(fs.existsSync(file_path)){
+                        this.json_objects[key] = data;
 
-                            let data = JSON.parse(fs.readFileSync(file_path).toString());
+                    }
+                    else{
 
-                            this.json_objects[data_name] = data;
+                        this.json_objects[key] = [];
 
-                            break;
+                        for(let parsed_path of parsed_paths){
+
+                            let data = JSON.parse(fs.readFileSync(parsed_path).toString());
+
+                            this.json_objects[key],push(data);
 
                         }
-    
+
                     }
 
-                    if (!(data_name in this.json_objects))
-                        throw new Error(`import ${data_name} failed`);
+                }
 
-                }                
+                // for(let data_name in obj){
+
+                //     for(let resource_dir_path of build_tool.command.resource_dirs){
+
+                //         let file_path = path.resolve(resource_dir_path, obj[data_name]);
+
+                //         if(path.extname(file_path) != ".json")
+                //             file_path += ".json";
+
+                //         if(fs.existsSync(file_path)){
+
+                //             let data = JSON.parse(fs.readFileSync(file_path).toString());
+
+                //             this.json_objects[data_name] = data;
+
+                //             break;
+
+                //         }
+    
+                //     }
+
+                //     if (!(data_name in this.json_objects))
+                //         throw new Error(`import ${data_name} failed`);
+
+                // }                
 
                 return this;
             },
