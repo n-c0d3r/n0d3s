@@ -461,8 +461,6 @@ class BuildTool {
     
                     let parsed_paths = build_tool.parse_path_query(this.src_file, obj[key], 'txt', build_tool.command.resource_dirs);
 
-                    console.log(key, parsed_paths);
-
                     if(parsed_paths.length == 0)
                         throw new Error(`import ${key} failed`);
 
@@ -484,6 +482,8 @@ class BuildTool {
                             this.text_objects[key].push(data);
 
                         }
+
+                        console.log(key, this.text_objects[key]);
 
                     }
 
