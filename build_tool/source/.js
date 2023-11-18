@@ -762,11 +762,9 @@ class BuildTool {
             relative_page_build_path(){
 
                 let parsed_html_file = null;
-
-                let src_file = this.non_virtual_src_file();
                 
-                if(src_file != null)
-                    parsed_html_file = src_file.slice(0, src_file.length - 3) + ".html";
+                if(this.src_file != null)
+                    parsed_html_file = this.src_file.slice(0, this.src_file.length - 3) + ".html";
 
                 return "pages/" + path.normalize(path.relative(build_tool.command.source_dir, parsed_html_file || (this.src_dir + '/' + this.id + ".html")));
             },
