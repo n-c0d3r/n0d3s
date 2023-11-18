@@ -149,6 +149,10 @@ class SrcParser {
 
                 path_query(path_query, options) { return []; },
 
+                add_variable_dependencies(variable_name, modules) { return module; },
+                remove_variable_dependencies(variable_name) { return module; },
+                is_has_variable_dependencies(variable_name) { return false; },
+
                 add_data(name, value) { return module; },
                 remove_data(name) { return module; },
                 is_has_data(name) { return false; },

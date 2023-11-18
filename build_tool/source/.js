@@ -632,6 +632,26 @@ class BuildTool {
                 return name in this.data_objects;
             },
 
+            add_variable_dependencies(variable_name, modules, is_multiple){
+
+                is_multiple = (modules.length > 1);
+
+                this.variable_to_dependencies[variable_name] = modules;
+                this.variable_to_dependencies[variable_name].is_multiple = is_multiple;
+
+                return this;
+            },
+            remove_variable_dependencies(variable_name) {
+
+                delete this.variable_to_dependencies[variable_name];
+
+                return this;
+            },
+            is_has_variable_dependencies(variable_name) {
+
+                return variable_name in this.variable_to_dependencies;
+            },
+
             json(obj, options = new Object()){
 
                 if(build_tool.command.resource_dirs.length == 0)
