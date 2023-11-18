@@ -62,7 +62,7 @@ class SrcParser {
 
             let dependencies = module.variable_to_dependencies[variable_name];
 
-            if(dependencies.length == 1){
+            if(!dependencies.is_multiple){
 
                 n0d3s_cached_dependency_results_js += `
                     var ${variable_name} = window.n0d3s_cached_dependency_results["${dependencies[0].id}"];

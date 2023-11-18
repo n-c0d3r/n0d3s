@@ -412,6 +412,7 @@ class BuildTool {
                             throw new Error(`import ${to_path} failed`);
     
                         this.variable_to_dependencies[key] = [];
+                        this.variable_to_dependencies[key].is_multiple = parsed_paths.is_multiple;
     
                         if(!parsed_paths.is_multiple){
     
@@ -483,8 +484,6 @@ class BuildTool {
                             this.text_objects[key].push(data);
 
                         }
-
-                        console.log(key, this.text_objects[key]);
 
                     }
 
