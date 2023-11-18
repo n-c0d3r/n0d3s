@@ -19,6 +19,19 @@ module.use({
     data: "data",
     
 })
+.exe(()=>{
+
+    console.log(module.path_query("./**"));
+
+    var new_module = module.create_virtual_module(`
+    
+        module;
+
+        console.log("hello world");
+    
+    `);
+
+})
 .register_page();
 
 

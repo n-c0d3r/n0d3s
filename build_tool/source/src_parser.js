@@ -28,7 +28,7 @@ class SrcParser {
         let c = js_content;
 
         let i = 0;
-        while(c[i] == '\n' || c[i] == '\r')
+        while(c[i] == '\n' || c[i] == '\r' || c[i] == ' ')
             ++i;
 
         c = c.slice(i, c.length);
@@ -50,7 +50,7 @@ class SrcParser {
         let c = module.src_content;
 
         let i = 0;
-        while(c[i] == '\n' || c[i] == '\r')
+        while(c[i] == '\n' || c[i] == '\r' || c[i] == ' ')
             ++i;
 
         c = c.slice(i, c.length);
@@ -129,6 +129,10 @@ class SrcParser {
 
                 external_js() { return module; },
                 external_js_module() { return module; },
+
+                create_virtual_module() { return module; },
+
+                path_query() { return []; },
 
             };
             

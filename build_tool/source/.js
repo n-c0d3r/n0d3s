@@ -134,10 +134,10 @@ class BuildTool {
         return true;
     }
 
-    search_for_corrected_path(from_file_path, to_file_path, file_extension, additional_dirs, entry_prefix) {
+    search_for_corrected_path(from_dir_path, caller_file_path, to_file_path, file_extension, additional_dirs, entry_prefix = "") {
 
         let corrected_file_path = path.resolve(
-            path.dirname(from_file_path), 
+            from_dir_path, 
             to_file_path
         );
 
@@ -209,19 +209,17 @@ class BuildTool {
 
 
 
-        throw new Error(`${from_file_path}: ${to_file_path} not found`);
-
         return null;
     }
 
-    parse_path_query(from_file_path, to_path, file_extension, additional_dirs, entry_prefix){
+    parse_path_query(from_dir_path, caller_file_path, path_query, file_extension, additional_dirs, entry_prefix = ""){
 
         let build_tool = this;
 
-        function search_for_dir(from_file_path, to_dir_path){
+        function search_for_dir(from_dir_path, to_dir_path){
 
             let corrected_file_path = path.resolve(
-                path.dirname(from_file_path), 
+                from_dir_path, 
                 to_dir_path
             );
     
@@ -257,15 +255,15 @@ class BuildTool {
         let result = [];
         result.is_multiple = false;
         
-        while(to_path[to_path.length - 1] == ' '){
+        while(path_query[path_query.length - 1] == ' '){
 
-            to_path = to_path.slice(0, to_path.length - 1);
+            path_query = path_query.slice(0, path_query.length - 1);
 
         }
 
-        if(to_path[to_path.length - 1] == '*' && to_path[to_path.length - 2] == '*'){
+        if(path_query[path_query.length - 1] == '*' && path_query[path_query.length - 2] == '*'){
 
-            let dir_path = search_for_dir(from_file_path, path.dirname(to_path));
+            let dir_path = search_for_dir(from_dir_path, path.dirname(path_query));
 
             let items = fs.readdirSync(dir_path);
 
@@ -287,9 +285,9 @@ class BuildTool {
             result.is_multiple = true;
 
         }
-        else if(to_path[to_path.length - 1] == '*'){
+        else if(path_query[path_query.length - 1] == '*'){
 
-            let dir_path = search_for_dir(from_file_path, path.dirname(to_path));
+            let dir_path = search_for_dir(from_dir_path, path.dirname(path_query));
 
             let items = fs.readdirSync(dir_path);
 
@@ -307,7 +305,7 @@ class BuildTool {
         }
         else{
 
-            result.push(to_path);
+            result.push(path_query);
 
         }
 
@@ -318,9 +316,14 @@ class BuildTool {
 
         for(let parsed_path of result){
 
-            let corrected_path = build_tool.search_for_corrected_path(from_file_path, parsed_path, file_extension, additional_dirs, entry_prefix);
+            let corrected_path = build_tool.search_for_corrected_path(from_dir_path, caller_file_path, parsed_path, file_extension, additional_dirs, entry_prefix);
 
-            if(path.resolve(corrected_path) != path.resolve(from_file_path))
+            if(corrected_path == null)
+                continue;
+
+            if(caller_file_path == null)
+                corrected_result.push(corrected_path);
+            else if(path.resolve(corrected_path) != path.resolve(caller_file_path))
                 corrected_result.push(corrected_path);
 
         }
@@ -328,22 +331,31 @@ class BuildTool {
         return corrected_result;
     }
 
-    importSrc(src_file){
+    import_module(src_file){
+
+        let src_content = fs.readFileSync(src_file).toString();
+
+        return this.create_module(src_content, path.dirname(src_file), src_file);
+    }
+    create_module(src_content, src_dir, src_file){
 
         var build_tool = this;
 
-        let fileContent = fs.readFileSync(src_file).toString();
+        let parsed_src_content = this.src_parser.parse_build_state_src_content(src_content);
 
-        let func = new Function(this.src_parser.parse_build_state_src_content(fileContent));
+        let func = new Function(parsed_src_content);
 
         func = func.bind({
 
+            parsed_src_content: parsed_src_content,
             src_file: src_file,
-            src_dir: path.dirname(src_file),
-            src_content: fileContent,
+            src_dir: src_dir,
+            src_content: src_content,
             build_tool: build_tool, 
             context: build_tool.context, 
-            id: file_path_to_id(src_file),
+            id: "module_" + uuid.v4().replaceAll("-", "_"),
+
+            is_virtual: (src_file == null),
 
             ...BuildTool,
 
@@ -358,14 +370,33 @@ class BuildTool {
             external_js_array: [],
             external_js_module_array: [],
 
+            build_tool: build_tool,
+
             import(file_path){
 
-                let module = build_tool.importSrc(file_path);
+                let module = build_tool.import_module(file_path);
 
                 if(module == null)
                     throw new Error(`${this.id} -> import(): import ${file_path} failed`);
 
                 return module;
+            },
+
+            add_dependency(module) {
+
+                this.dependency_data[module.id] = module;
+                
+                return this;
+            },
+
+            create_virtual_module(file_content, src_dir, auto_add_dependency = true){
+
+                let new_virtual_module = build_tool.create_module(file_content, src_dir || this.src_dir);
+
+                if(auto_add_dependency)
+                    this.add_dependency(new_virtual_module);
+        
+                return new_virtual_module;
             },
 
             use_all(options) {
@@ -388,17 +419,17 @@ class BuildTool {
 
                 if(Array.isArray(obj)){
 
-                    for(let to_path of obj){
+                    for(let path_query of obj){
 
                         let parsed_paths = build_tool.parse_path_query(
-                            this.src_file, to_path, 
+                            this.src_dir, this.src_file, path_query, 
                             'js', 
                             build_tool.command.additional_source_dirs,
                             options.entry_prefix || ""
                         );
 
                         if(parsed_paths.length == 0)
-                            throw new Error(`${this.id} -> use(): import ${to_path} failed`);
+                            throw new Error(`${this.id} -> use(): import ${path_query} failed`);
 
                         if(!parsed_paths.is_multiple){
 
@@ -429,7 +460,7 @@ class BuildTool {
                     for(let key in obj){
     
                         let parsed_paths = build_tool.parse_path_query(
-                            this.src_file, obj[key], 
+                            this.src_dir, this.src_file, obj[key], 
                             'js', 
                             build_tool.command.additional_source_dirs,
                             options.entry_prefix || ""
@@ -489,7 +520,7 @@ class BuildTool {
                 for(let key in obj){
     
                     let parsed_paths = build_tool.parse_path_query(
-                        this.src_file, obj[key], 
+                        this.src_dir, this.src_file, obj[key], 
                         'txt', 
                         build_tool.command.resource_dirs,
                         options.entry_prefix || ""
@@ -534,7 +565,7 @@ class BuildTool {
                 for(let key in obj){
     
                     let parsed_paths = build_tool.parse_path_query(
-                        this.src_file, obj[key], 
+                        this.src_dir, this.src_file, obj[key], 
                         'json', 
                         build_tool.command.resource_dirs, 
                         options.entry_prefix || ""
@@ -579,7 +610,7 @@ class BuildTool {
             exe_js(path, options = new Object()){
 
                 let parsed_paths = build_tool.parse_path_query(
-                    this.src_file, path, 
+                    this.src_dir, this.src_file, path, 
                     'js', 
                     build_tool.command.additional_source_dirs, 
                     options.entry_prefix || ""
@@ -623,6 +654,21 @@ class BuildTool {
                 return this;
             },
 
+            path_query(path_query, file_extension, additional_dirs, entry_prefix = ""){
+
+                file_extension = file_extension || "js";
+                additional_dirs = additional_dirs || build_tool.command.additional_source_dirs;
+
+                return build_tool.parse_path_query(
+                    this.src_dir,
+                    this.src_file,
+                    path_query,
+                    file_extension,
+                    additional_dirs,
+                    entry_prefix
+                );
+            },
+
             register_page(preInnerHTML = "", postInnerHTML = ""){
 
                 this.is_page = true;
@@ -648,7 +694,7 @@ class BuildTool {
 
 
                 let corrected_file_path = path.resolve(
-                    path.dirname(this.src_file), 
+                    this.src_dir, 
                     file_path
                 );
 
@@ -874,7 +920,7 @@ class BuildTool {
             return false;
         }
 
-        this.#index_module = this.importSrc(this.command.src_index_file);
+        this.#index_module = this.import_module(this.command.src_index_file);
 
         this.buildSortedModuleList();
         this.buildClSrcContent();
