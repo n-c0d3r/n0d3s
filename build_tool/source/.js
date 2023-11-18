@@ -433,7 +433,7 @@ class BuildTool {
                         );
 
                         if(parsed_paths.length == 0)
-                            throw new Error(`import ${to_path} failed`);
+                            throw new Error(`import ${key} from ${object[key]} failed`);
     
                         this.variable_to_dependencies[key] = [];
                         this.variable_to_dependencies[key].is_multiple = parsed_paths.is_multiple;
@@ -493,7 +493,7 @@ class BuildTool {
                     );
 
                     if(parsed_paths.length == 0)
-                        throw new Error(`import ${key} failed`);
+                        throw new Error(`import ${key} from ${obj[key]} failed`);
 
                     if(!parsed_paths.is_multiple){
 
@@ -538,7 +538,7 @@ class BuildTool {
                     );
 
                     if(parsed_paths.length == 0)
-                        throw new Error(`import ${key} failed`);
+                        throw new Error(`import ${key} from ${obj[key]} failed`);
 
                     if(!parsed_paths.is_multiple){
 
