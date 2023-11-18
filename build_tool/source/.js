@@ -399,6 +399,9 @@ class BuildTool {
             external_js_array: [],
             external_js_module_array: [],
 
+            is_auto_return: false,
+            auto_return_object: null,
+
             build_tool: build_tool,
 
             import(file_path){
@@ -793,6 +796,14 @@ class BuildTool {
 
                 return build_tool.command.build_dir + "/" + this.relative_page_build_path();
             },
+
+            auto_return(obj){
+
+                this.auto_return_object = obj;
+                this.is_auto_return = true;
+
+                return this;
+            }
 
         });
 

@@ -161,6 +161,8 @@ class SrcParser {
 
                 use_and_get() { return {}; },
 
+                auto_return() { return module; },
+
             };
             
             var build_state = false;
@@ -179,7 +181,7 @@ class SrcParser {
                 ${n0d3s_json_objects}
                 ${n0d3s_data_objects}
                 
-                ${c}
+                ${module.is_auto_return ? `decodeURIComponent(${encodeURIComponent(JSON.stringify(module.auto_return_object))})` : c}
 
             ${(module.open_mode) ? "" : `})();`}
         
