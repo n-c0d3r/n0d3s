@@ -314,6 +314,7 @@ class BuildTool {
 
         
         let corrected_result = [];
+        corrected_result.is_multiple = result.is_multiple;
 
         for(let parsed_path of result){
 
