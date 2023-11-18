@@ -355,12 +355,14 @@ class BuildTool {
             text_objects: new Object(),
             json_objects: new Object(), 
 
+            external_js_url_array: [],
+
             import(file_path){
 
                 let module = build_tool.importSrc(file_path);
 
                 if(module == null)
-                    throw new Error(`import ${file_path} failed`);
+                    throw new Error(`${this.id} -> import(): import ${file_path} failed`);
 
                 return module;
             },
@@ -395,7 +397,7 @@ class BuildTool {
                         );
 
                         if(parsed_paths.length == 0)
-                            throw new Error(`import ${to_path} failed`);
+                            throw new Error(`${this.id} -> use(): import ${to_path} failed`);
 
                         if(!parsed_paths.is_multiple){
 
@@ -433,7 +435,7 @@ class BuildTool {
                         );
 
                         if(parsed_paths.length == 0)
-                            throw new Error(`import ${key} from ${object[key]} failed`);
+                            throw new Error(`${this.id} -> use(): import ${key} from ${object[key]} failed`);
     
                         this.variable_to_dependencies[key] = [];
                         this.variable_to_dependencies[key].is_multiple = parsed_paths.is_multiple;
@@ -493,7 +495,7 @@ class BuildTool {
                     );
 
                     if(parsed_paths.length == 0)
-                        throw new Error(`import ${key} from ${obj[key]} failed`);
+                        throw new Error(`${this.id} -> text(): from ${obj[key]} failed`);
 
                     if(!parsed_paths.is_multiple){
 
@@ -538,7 +540,7 @@ class BuildTool {
                     );
 
                     if(parsed_paths.length == 0)
-                        throw new Error(`import ${key} from ${obj[key]} failed`);
+                        throw new Error(`${this.id} -> json(): import ${key} from ${obj[key]} failed`);
 
                     if(!parsed_paths.is_multiple){
 
@@ -569,6 +571,43 @@ class BuildTool {
             exe(callback){
 
                 callback();
+
+                return this;
+            },
+
+            exe_js(path, options = new Object()){
+
+                let parsed_paths = build_tool.parse_path_query(
+                    this.src_file, path, 
+                    'js', 
+                    build_tool.command.additional_source_dirs, 
+                    options.entry_prefix || ""
+                );
+
+                if(parsed_paths.length == 0)
+                    throw new Error(`${this.id} -> exe_js(): import ${key} from ${obj[key]} failed`);
+
+                for(let parsed_path of parsed_paths){
+
+                    let file_content = `var module = this; fs.readFileSync(parsed_path).toString()`;
+
+                    let func = new Function(file_content);
+
+                    func.bind(this);
+
+                    func();
+
+                }
+                
+                return this;
+            },
+
+            external_js_urls(arr) {
+
+                if(!Array.isArray(arr))
+                    throw new Error(`${this.id} -> external_js_urls(): ${arr} is not an array`);
+
+                this.external_js_url_array = external_js_url_array.concat(arr);
 
                 return this;
             },
