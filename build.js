@@ -9,4 +9,8 @@ let buildtool = new n0d3s.BuildTool({
 
 });
 
-buildtool.build();
+(async function(){
+
+    await buildtool.build();
+
+})();

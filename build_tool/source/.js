@@ -3,9 +3,8 @@ const fs = require("fs");
 const path = require("path");
 const uuid = require('uuid');
 const fse = require('fs-extra');
-var UglifyJS = require("uglify-js");
 
-const { Queue } = require('@datastructures-js/queue');
+const Terser = require("terser");
 
 const file_path_to_id = require('./file_path_to_id');
 
@@ -852,7 +851,7 @@ class BuildTool {
         return sortedModules;
     }
 
-    buildSortedModuleList() {
+    async buildSortedModuleList() {
 
         this.#modules = this.sortedDependencies(this.index_module);
 
@@ -860,7 +859,7 @@ class BuildTool {
 
     }
 
-    buildClSrcContent() {
+    async buildClSrcContent() {
 
         for(let module of this.#modules){
 
@@ -870,7 +869,7 @@ class BuildTool {
 
     }
 
-    saveScripts(){
+    async saveScripts(){
 
         let scriptOutputDir = this.command.build_dir + '/scripts';
 
@@ -885,8 +884,19 @@ class BuildTool {
 
             let js_content = module.cl_src_content;
 
-            if(this.command.js_encode)
-                js_content = UglifyJS.minify(js_content).code;
+            if(this.command.js_encode) {
+
+                let minified_js_content = await Terser.minify(
+                    js_content,
+                    {
+                        compress: {
+                            drop_console: false
+                        }
+                    }
+                );
+
+                js_content = minified_js_content.code;
+            }
 
             fs.writeFileSync(outputPath, js_content);
 
@@ -894,7 +904,7 @@ class BuildTool {
 
     }
 
-    savePages(){
+    async savePages(){
 
         let pageOutputDir = this.command.build_dir + '/pages';
 
@@ -946,14 +956,11 @@ class BuildTool {
 
                     let file_path = m.script_build_path();
 
-                    jsEmbeddedContent += fs.readFileSync(file_path);
+                    jsEmbeddedContent += fs.readFileSync(file_path) + '\n';
 
                 }
 
-                if(this.command.js_encode)
-                    jsEmbeddedContent = `<script>${UglifyJS.minify(jsEmbeddedContent).code}</script>`;
-                else
-                    jsEmbeddedContent = `<script>${jsEmbeddedContent}</script>`;
+                jsEmbeddedContent = `<script>${jsEmbeddedContent}</script>`;
 
             }
 
@@ -1020,7 +1027,7 @@ class BuildTool {
 
     }
 
-    build(){
+    async build(){
 
         console.log("Start build project");
 
@@ -1033,11 +1040,11 @@ class BuildTool {
 
         this.#index_module = this.import_module(this.command.src_index_file);
 
-        this.buildSortedModuleList();
-        this.buildClSrcContent();
+        await this.buildSortedModuleList();
+        await this.buildClSrcContent();
 
-        this.saveScripts();
-        this.savePages();
+        await this.saveScripts();
+        await this.savePages();
 
         if(this.command.js_embedded_build)
             fs.rmSync(this.command.build_dir + '/scripts', { recursive: true, force: true });
