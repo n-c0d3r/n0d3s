@@ -890,7 +890,7 @@ class BuildTool {
                     js_content,
                     {
                         compress: {
-                            drop_console: false
+                            drop_console: true
                         }
                     }
                 );
