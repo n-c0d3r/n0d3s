@@ -134,7 +134,7 @@ class BuildTool {
         return true;
     }
 
-    search_for_corrected_path(from_file_path, to_file_path) {
+    search_for_corrected_path(from_file_path, to_file_path, file_extension, additional_dirs) {
 
         let corrected_file_path = path.resolve(
             path.dirname(from_file_path), 
@@ -144,13 +144,13 @@ class BuildTool {
         if(fs.existsSync(corrected_file_path)){
 
             if(fs.statSync(corrected_file_path).isDirectory())
-                corrected_file_path += "/.js";
-            else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != '.js')
-                corrected_file_path += '.js';
+                corrected_file_path += `/.${file_extension}`;
+            else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != `.${file_extension}`)
+                corrected_file_path += `.${file_extension}`;
 
         }
-        else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != '.js')
-            corrected_file_path += '.js';
+        else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != `.${file_extension}`)
+            corrected_file_path += `.${file_extension}`;
 
         if(fs.existsSync(path.normalize(corrected_file_path))){
 
@@ -167,13 +167,13 @@ class BuildTool {
         if(fs.existsSync(corrected_file_path)){
 
             if(fs.statSync(corrected_file_path).isDirectory())
-                corrected_file_path += "/.js";
-            else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != '.js')
-                corrected_file_path += '.js';
+                corrected_file_path += `/.${file_extension}`;
+            else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != `.${file_extension}`)
+                corrected_file_path += `.${file_extension}`;
 
         }
-        else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != '.js')
-            corrected_file_path += '.js';
+        else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != `.${file_extension}`)
+            corrected_file_path += `.${file_extension}`;
 
         if(fs.existsSync(path.normalize(corrected_file_path))){
 
@@ -182,7 +182,7 @@ class BuildTool {
 
 
 
-        for(let additional_source_dir of this.command.additional_source_dirs){
+        for(let additional_source_dir of additional_dirs){
 
             let corrected_file_path = path.resolve(
                 additional_source_dir, 
@@ -192,13 +192,13 @@ class BuildTool {
             if(fs.existsSync(corrected_file_path)){
 
                 if(fs.statSync(corrected_file_path).isDirectory())
-                    corrected_file_path += "/.js";                    
-                else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != '.js')
-                    corrected_file_path += '.js';
+                    corrected_file_path += `/.${file_extension}`;                    
+                else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != `.${file_extension}`)
+                    corrected_file_path += `.${file_extension}`;
     
             }
-            else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != '.js')
-                corrected_file_path += '.js';
+            else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != `.${file_extension}`)
+                corrected_file_path += `.${file_extension}`;
     
             if(fs.existsSync(corrected_file_path)){
     
@@ -209,7 +209,7 @@ class BuildTool {
 
 
 
-        throw new Error(`${from_file_path}: module ${to_file_path} not found`);
+        throw new Error(`${from_file_path}: ${to_file_path} not found`);
 
         return null;
     }
@@ -311,7 +311,20 @@ class BuildTool {
 
         }
 
-        return result;
+
+        
+        let corrected_result = [];
+
+        for(let parsed_path of result){
+
+            let corrected_path = build_tool.search_for_corrected_path(from_file_path, parsed_path, file_extension, additional_dirs);
+
+            if(path.resolve(corrected_path) != path.resolve(from_file_path))
+                corrected_result.push(corrected_path);
+
+        }
+
+        return corrected_result;
     }
 
     importSrc(src_file){
@@ -343,12 +356,7 @@ class BuildTool {
 
             import(file_path){
 
-                let corrected_file_path = build_tool.search_for_corrected_path(this.src_file, file_path);
-
-                if(path.resolve(corrected_file_path) == path.resolve(this.src_file))
-                    return null;
-
-                let module = build_tool.importSrc(corrected_file_path);
+                let module = build_tool.importSrc(file_path);
 
                 if(module == null)
                     throw new Error(`import ${file_path} failed`);
