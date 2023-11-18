@@ -634,7 +634,7 @@ class BuildTool {
 
             add_variable_dependencies(variable_name, modules, is_multiple){
 
-                is_multiple = (modules.length > 1);
+                is_multiple = (modules.length > 1) || is_multiple;
 
                 for(let m of modules){
 
