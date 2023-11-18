@@ -363,7 +363,7 @@ class BuildTool {
 
         let func = new Function(parsed_src_content);
 
-        func = func.bind({
+        let temp_module = {
 
             parsed_src_content: parsed_src_content,
 
@@ -833,19 +833,19 @@ class BuildTool {
                 return this;
             }
 
-        });
+        };
+
+        let binded_func = func.bind(temp_module);
 
         try {
 
-            return func(true);
+            return binded_func(true);
         }
         catch(err) {
 
-            console.error(`${func.src_dir} :: ${func.non_virtual_src_file() || func.id} -> (): failure error`);
+            console.error(`${temp_module.src_dir} :: ${temp_module.non_virtual_src_file() || temp_module.id} -> (): failure error`);
 
             throw err;
-
-            return null;
         }
     }
 
