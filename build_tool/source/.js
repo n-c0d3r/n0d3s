@@ -378,7 +378,7 @@ class BuildTool {
 
             ...BuildTool,
 
-            dependency_data: new Object(),
+            dependent_modules: new Object(),
             variable_to_dependencies: new Object(),
             is_page: false,
             open_mode: false,
@@ -404,7 +404,7 @@ class BuildTool {
 
             add_dependency(module) {
 
-                this.dependency_data[module.id] = module;
+                this.dependent_modules[module.id] = module;
                 
                 return this;
             },
@@ -456,7 +456,7 @@ class BuildTool {
                             let module = this.import(parsed_paths[0]);
 
                             if(module != null)
-                                this.dependency_data[module.id] = module;
+                                this.dependent_modules[module.id] = module;
 
                         }
                         else{
@@ -466,7 +466,7 @@ class BuildTool {
                                 let module = this.import(parsed_path);
         
                                 if(module != null)
-                                    this.dependency_data[module.id] = module;
+                                    this.dependent_modules[module.id] = module;
 
                             }
 
@@ -498,7 +498,7 @@ class BuildTool {
     
                             if(module != null) {
 
-                                this.dependency_data[module.id] = module;
+                                this.dependent_modules[module.id] = module;
     
                                 this.variable_to_dependencies[key].push(module);
 
@@ -513,7 +513,7 @@ class BuildTool {
         
                                 if(module != null) {
 
-                                    this.dependency_data[module.id] = module;
+                                    this.dependent_modules[module.id] = module;
         
                                     this.variable_to_dependencies[key].push(module);
 
@@ -775,9 +775,9 @@ class BuildTool {
     
             let sortedModules = [];
     
-            for(let key in module.dependency_data){
+            for(let key in module.dependent_modules){
     
-                let dependency_module = module.dependency_data[key];
+                let dependency_module = module.dependent_modules[key];
     
                 if(dependency_module.id in pushedModuleIds)
                     continue;
