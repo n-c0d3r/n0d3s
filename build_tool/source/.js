@@ -679,7 +679,7 @@ class BuildTool {
 
             exe(callback){
 
-                callback();
+                callback(this);
 
                 return this;
             },
