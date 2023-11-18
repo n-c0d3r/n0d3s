@@ -365,6 +365,17 @@ class BuildTool {
                 return module;
             },
 
+            use_all() {
+
+                use([
+
+                    "./**",
+
+                ]);
+
+                return this;
+            },
+            
             use(obj){
 
                 if(obj == null) return this;
