@@ -324,6 +324,8 @@ class BuildTool {
 
         }
 
+        console.log(to_path, corrected_result);
+
         return corrected_result;
     }
 
