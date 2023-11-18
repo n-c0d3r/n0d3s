@@ -133,25 +133,25 @@ class SrcParser {
             var module = {
 
                 use_all() { return module; },
-                use() { return module; },
+                use(obj) { return module; },
                 register_page() { return module; },
                 use_open_mode() { return module; },
-                text() { return module; },
-                json() { return module; },
+                text(obj) { return module; },
+                json(obj) { return module; },
 
-                exe() { return module; },
-                exe_js() { return module; },
+                exe(callback) { return module; },
+                exe_js(path, options) { return module; },
 
-                external_js() { return module; },
-                external_js_module() { return module; },
+                external_js(arr) { return module; },
+                external_js_module(arr) { return module; },
 
-                create_virtual_module() { return module; },
+                create_virtual_module(file_content, options) { return module; },
 
-                path_query() { return []; },
+                path_query(path_query, options) { return []; },
 
-                add_data() { return module; },
-                remove_data() { return module; },
-                is_has_data() { return false; },
+                add_data(name, value) { return module; },
+                remove_data(name) { return module; },
+                is_has_data(name) { return false; },
 
                 relative_script_build_path() { return ""; },
                 relative_page_build_path() { return ""; },
@@ -159,12 +159,12 @@ class SrcParser {
                 script_build_path() { return ""; },
                 page_build_path() { return ""; },
 
-                use_and_get() { return {}; },
+                use_and_get(path_query, options = new Object()) { return {}; },
 
-                auto_return() { return module; },
+                auto_return(obj) { return module; },
 
-                encode_js_str() { return ""; },
-                decode_js_str() { return ""; },
+                encode_js_str(value) { return ""; },
+                decode_js_str(value) { return ""; },
 
             };
             
