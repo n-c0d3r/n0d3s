@@ -159,7 +159,7 @@ class SrcParser {
                 script_build_path() { return ""; },
                 page_build_path() { return ""; },
 
-                use_and_get(path_query, options = new Object()) { return {}; },
+                use_and_get(path_query, options = new Object()) { return module; },
 
                 auto_return(obj) { return module; },
 
