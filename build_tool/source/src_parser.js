@@ -127,6 +127,9 @@ class SrcParser {
                 exe() { return module; },
                 exe_js() { return module; },
 
+                external_js() { return module; },
+                external_js_module() { return module; },
+
             };
             
             var build_state = false;

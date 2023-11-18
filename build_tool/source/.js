@@ -355,7 +355,8 @@ class BuildTool {
             text_objects: new Object(),
             json_objects: new Object(), 
 
-            external_js_url_array: [],
+            external_js_array: [],
+            external_js_module_array: [],
 
             import(file_path){
 
@@ -602,12 +603,22 @@ class BuildTool {
                 return this;
             },
 
-            external_js_urls(arr) {
+            external_js(arr) {
 
                 if(!Array.isArray(arr))
-                    throw new Error(`${this.id} -> external_js_urls(): ${arr} is not an array`);
+                    throw new Error(`${this.id} -> external_js(): ${arr} is not an array`);
 
-                this.external_js_url_array = external_js_url_array.concat(arr);
+                this.external_js_array = external_js_array.concat(arr);
+
+                return this;
+            },
+
+            external_js_module(arr) {
+
+                if(!Array.isArray(arr))
+                    throw new Error(`${this.id} -> external_js_module(): ${arr} is not an array`);
+
+                this.external_js_module_array = external_js_module_array.concat(arr);
 
                 return this;
             },
@@ -789,6 +800,30 @@ class BuildTool {
 
             }
 
+
+
+            let externalJSContent = '';
+            for(let m of modules){
+
+                for(let external_js of m.external_js_array){
+
+                    externalJSContent += `<script src="${external_js}"></script>`;
+
+                }
+
+            }
+
+            let externalJSModuleContent = '';
+            for(let m of modules){
+
+                for(let external_js of m.external_js_module_array){
+
+                    externalJSContent += `<script type="module" src="${external_js}"></script>`;
+
+                }
+
+            }
+
             
 
             let htmlContent = `
@@ -803,6 +838,10 @@ class BuildTool {
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <!--<script src="${path.relative(path.dirname(outputPath), clientLibDir)}/n0d3s.js"></script>-->
                     <title></title>
+
+                    ${externalJSContent}
+                    ${externalJSModuleContent}
+
                 </head>
                 <body>
                     ${module.preInnerHTML || ""}
