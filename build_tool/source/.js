@@ -144,12 +144,12 @@ class BuildTool {
         if(fs.existsSync(corrected_file_path)){
 
             if(fs.statSync(corrected_file_path).isDirectory())
-                corrected_file_path += `/.${file_extension}`;
-            else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != `.${file_extension}`)
+                corrected_file_path += `/${entry_prefix}.${file_extension}`;
+            else if(corrected_file_path.slice(corrected_file_path.length - (file_extension.length + 1), corrected_file_path.length) != `.${file_extension}`)
                 corrected_file_path += `.${file_extension}`;
 
         }
-        else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != `.${file_extension}`)
+        else if(corrected_file_path.slice(corrected_file_path.length - (file_extension.length + 1), corrected_file_path.length) != `.${file_extension}`)
             corrected_file_path += `.${file_extension}`;
 
         if(fs.existsSync(path.normalize(corrected_file_path))){
@@ -167,12 +167,12 @@ class BuildTool {
         if(fs.existsSync(corrected_file_path)){
 
             if(fs.statSync(corrected_file_path).isDirectory())
-                corrected_file_path += `/.${file_extension}`;
-            else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != `.${file_extension}`)
+                corrected_file_path += `/${entry_prefix}.${file_extension}`;
+            else if(corrected_file_path.slice(corrected_file_path.length - (file_extension.length + 1), corrected_file_path.length) != `.${file_extension}`)
                 corrected_file_path += `.${file_extension}`;
 
         }
-        else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != `.${file_extension}`)
+        else if(corrected_file_path.slice(corrected_file_path.length - (file_extension.length + 1), corrected_file_path.length) != `.${file_extension}`)
             corrected_file_path += `.${file_extension}`;
 
         if(fs.existsSync(path.normalize(corrected_file_path))){
@@ -192,12 +192,12 @@ class BuildTool {
             if(fs.existsSync(corrected_file_path)){
 
                 if(fs.statSync(corrected_file_path).isDirectory())
-                    corrected_file_path += `/.${file_extension}`;                    
-                else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != `.${file_extension}`)
+                    corrected_file_path += `/${entry_prefix}.${file_extension}`;                    
+                else if(corrected_file_path.slice(corrected_file_path.length - (file_extension.length + 1), corrected_file_path.length) != `.${file_extension}`)
                     corrected_file_path += `.${file_extension}`;
     
             }
-            else if(corrected_file_path.slice(corrected_file_path.length - 3, corrected_file_path.length) != `.${file_extension}`)
+            else if(corrected_file_path.slice(corrected_file_path.length - (file_extension.length + 1), corrected_file_path.length) != `.${file_extension}`)
                 corrected_file_path += `.${file_extension}`;
     
             if(fs.existsSync(corrected_file_path)){
@@ -214,7 +214,7 @@ class BuildTool {
         return null;
     }
 
-    parse_path_query(from_file_path, to_path, file_extension, additional_dirs){
+    parse_path_query(from_file_path, to_path, file_extension, additional_dirs, entry_prefix){
 
         let build_tool = this;
 
@@ -275,7 +275,7 @@ class BuildTool {
 
                 if(fs.statSync(item_path).isDirectory()){
 
-                    if(fs.existsSync(item_path + `/.${file_extension}`))
+                    if(fs.existsSync(item_path + `/${entry_prefix}.${file_extension}`))
                         result.push(item_path);
 
                 }
@@ -365,18 +365,21 @@ class BuildTool {
                 return module;
             },
 
-            use_all() {
+            use_all(entry_prefix = '') {
 
-                this.use([
+                this.use(
+                    [
 
-                    "./**",
+                        "./**",
 
-                ]);
+                    ],
+                    entry_prefix
+                );
 
                 return this;
             },
 
-            use(obj){
+            use(obj, entry_prefix = ''){
 
                 if(obj == null) return this;
 
@@ -384,7 +387,12 @@ class BuildTool {
 
                     for(let to_path of obj){
 
-                        let parsed_paths = build_tool.parse_path_query(this.src_file, to_path, 'js', build_tool.command.additional_source_dirs);
+                        let parsed_paths = build_tool.parse_path_query(
+                            this.src_file, to_path, 
+                            'js', 
+                            build_tool.command.additional_source_dirs,
+                            entry_prefix
+                        );
 
                         if(parsed_paths.length == 0)
                             throw new Error(`import ${to_path} failed`);
@@ -417,7 +425,12 @@ class BuildTool {
 
                     for(let key in obj){
     
-                        let parsed_paths = build_tool.parse_path_query(this.src_file, obj[key], 'js', build_tool.command.additional_source_dirs);
+                        let parsed_paths = build_tool.parse_path_query(
+                            this.src_file, obj[key], 
+                            'js', 
+                            build_tool.command.additional_source_dirs,
+                            entry_prefix
+                        );
 
                         if(parsed_paths.length == 0)
                             throw new Error(`import ${to_path} failed`);
@@ -463,7 +476,7 @@ class BuildTool {
                 return this;             
             },
 
-            text(obj){
+            text(obj, entry_prefix = ''){
 
                 if(build_tool.command.resource_dirs.length == 0)
                     throw new Error(`cant import text because there is no resource directory`);
@@ -472,7 +485,12 @@ class BuildTool {
 
                 for(let key in obj){
     
-                    let parsed_paths = build_tool.parse_path_query(this.src_file, obj[key], 'txt', build_tool.command.resource_dirs);
+                    let parsed_paths = build_tool.parse_path_query(
+                        this.src_file, obj[key], 
+                        'txt', 
+                        build_tool.command.resource_dirs,
+                        entry_prefix
+                    );
 
                     if(parsed_paths.length == 0)
                         throw new Error(`import ${key} failed`);
@@ -500,36 +518,10 @@ class BuildTool {
 
                 }
 
-                // for(let data_name in obj){
-
-                //     for(let resource_dir_path of build_tool.command.resource_dirs){
-
-                //         let file_path = path.resolve(resource_dir_path, obj[data_name]);
-
-                //         if(path.extname(file_path) != ".txt")
-                //             file_path += ".txt";
-
-                //         if(fs.existsSync(file_path)){
-
-                //             let data = fs.readFileSync(file_path).toString();
-
-                //             this.text_objects[data_name] = data;
-
-                //             break;
-
-                //         }
-    
-                //     }
-
-                //     if (!(data_name in this.text_objects))
-                //         throw new Error(`import ${data_name} failed`);
-
-                // }
-
                 return this;
             },
 
-            json(obj){
+            json(obj, entry_prefix = ''){
 
                 if(build_tool.command.resource_dirs.length == 0)
                     throw new Error(`cant import json because there is no resource directory`);
@@ -538,7 +530,12 @@ class BuildTool {
 
                 for(let key in obj){
     
-                    let parsed_paths = build_tool.parse_path_query(this.src_file, obj[key], 'json', build_tool.command.resource_dirs);
+                    let parsed_paths = build_tool.parse_path_query(
+                        this.src_file, obj[key], 
+                        'json', 
+                        build_tool.command.resource_dirs, 
+                        entry_prefix
+                    );
 
                     if(parsed_paths.length == 0)
                         throw new Error(`import ${key} failed`);
@@ -564,33 +561,7 @@ class BuildTool {
 
                     }
 
-                }
-
-                // for(let data_name in obj){
-
-                //     for(let resource_dir_path of build_tool.command.resource_dirs){
-
-                //         let file_path = path.resolve(resource_dir_path, obj[data_name]);
-
-                //         if(path.extname(file_path) != ".json")
-                //             file_path += ".json";
-
-                //         if(fs.existsSync(file_path)){
-
-                //             let data = JSON.parse(fs.readFileSync(file_path).toString());
-
-                //             this.json_objects[data_name] = data;
-
-                //             break;
-
-                //         }
-    
-                //     }
-
-                //     if (!(data_name in this.json_objects))
-                //         throw new Error(`import ${data_name} failed`);
-
-                // }                
+                }              
 
                 return this;
             },
