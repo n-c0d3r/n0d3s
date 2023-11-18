@@ -365,7 +365,7 @@ class BuildTool {
                 return module;
             },
 
-            use_all(entry_prefix = '') {
+            use_all(options) {
 
                 this.use(
                     [
@@ -373,13 +373,13 @@ class BuildTool {
                         "./**",
 
                     ],
-                    entry_prefix
+                    options
                 );
 
                 return this;
             },
 
-            use(obj, entry_prefix = ''){
+            use(obj, options = new Object()){
 
                 if(obj == null) return this;
 
@@ -391,7 +391,7 @@ class BuildTool {
                             this.src_file, to_path, 
                             'js', 
                             build_tool.command.additional_source_dirs,
-                            entry_prefix
+                            options.entry_prefix || ""
                         );
 
                         if(parsed_paths.length == 0)
@@ -429,7 +429,7 @@ class BuildTool {
                             this.src_file, obj[key], 
                             'js', 
                             build_tool.command.additional_source_dirs,
-                            entry_prefix
+                            options.entry_prefix || ""
                         );
 
                         if(parsed_paths.length == 0)
@@ -476,7 +476,7 @@ class BuildTool {
                 return this;             
             },
 
-            text(obj, entry_prefix = ''){
+            text(obj, options = new Object()){
 
                 if(build_tool.command.resource_dirs.length == 0)
                     throw new Error(`cant import text because there is no resource directory`);
@@ -489,7 +489,7 @@ class BuildTool {
                         this.src_file, obj[key], 
                         'txt', 
                         build_tool.command.resource_dirs,
-                        entry_prefix
+                        options.entry_prefix || ""
                     );
 
                     if(parsed_paths.length == 0)
@@ -521,7 +521,7 @@ class BuildTool {
                 return this;
             },
 
-            json(obj, entry_prefix = ''){
+            json(obj, options = new Object()){
 
                 if(build_tool.command.resource_dirs.length == 0)
                     throw new Error(`cant import json because there is no resource directory`);
@@ -534,7 +534,7 @@ class BuildTool {
                         this.src_file, obj[key], 
                         'json', 
                         build_tool.command.resource_dirs, 
-                        entry_prefix
+                        options.entry_prefix || ""
                     );
 
                     if(parsed_paths.length == 0)
