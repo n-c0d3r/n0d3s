@@ -720,18 +720,19 @@ class BuildTool {
                 return this;
             },
 
-            path_query(path_query, file_extension, additional_dirs, entry_prefix = ""){
+            path_query(path_query, options = new Object()){
 
-                file_extension = file_extension || "js";
-                additional_dirs = additional_dirs || build_tool.command.additional_source_dirs;
+                options.file_extension = options.file_extension || "js";
+                options.additional_dirs = options.additional_dirs || build_tool.command.additional_source_dirs;
+                options.entry_prefix = options.entry_prefix || "";
 
                 return build_tool.parse_path_query(
                     this.src_dir,
                     this.non_virtual_src_file(),
                     path_query,
-                    file_extension,
-                    additional_dirs,
-                    entry_prefix
+                    options.file_extension,
+                    options.additional_dirs,
+                    options.entry_prefix
                 );
             },
 
