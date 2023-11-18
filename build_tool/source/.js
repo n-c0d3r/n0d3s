@@ -406,7 +406,7 @@ class BuildTool {
                 let module = build_tool.import_module(file_path);
 
                 if(module == null)
-                    throw new Error(`${this.id} -> import(): import ${file_path} failed`);
+                    throw new Error(`${this.src_dir} :: ${this.non_virtual_src_file() || this.id} -> import(): import ${file_path} failed`);
 
                 return module;
             },
@@ -478,7 +478,7 @@ class BuildTool {
                         );
 
                         if(parsed_paths.length == 0)
-                            throw new Error(`${this.id} -> use(): import ${path_query} failed`);
+                            throw new Error(`${this.src_dir} :: ${this.non_virtual_src_file() || this.id} -> use(): import ${path_query} failed`);
 
                         if(!parsed_paths.is_multiple){
 
@@ -516,7 +516,7 @@ class BuildTool {
                         );
 
                         if(parsed_paths.length == 0)
-                            throw new Error(`${this.id} -> use(): import ${key} from ${object[key]} failed`);
+                            throw new Error(`${this.src_dir} :: ${this.non_virtual_src_file() || this.id} -> use(): import ${key} from ${object[key]} failed`);
     
                         this.variable_to_dependencies[key] = [];
                         this.variable_to_dependencies[key].is_multiple = parsed_paths.is_multiple;
@@ -576,7 +576,7 @@ class BuildTool {
                     );
 
                     if(parsed_paths.length == 0)
-                        throw new Error(`${this.id} -> text(): from ${obj[key]} failed`);
+                        throw new Error(`${this.src_dir} :: ${this.non_virtual_src_file() || this.id} -> text(): from ${obj[key]} failed`);
 
                     if(!parsed_paths.is_multiple){
 
@@ -638,7 +638,7 @@ class BuildTool {
                     );
 
                     if(parsed_paths.length == 0)
-                        throw new Error(`${this.id} -> json(): import ${key} from ${obj[key]} failed`);
+                        throw new Error(`${this.src_dir} :: ${this.non_virtual_src_file() || this.id} -> json(): import ${key} from ${obj[key]} failed`);
 
                     if(!parsed_paths.is_multiple){
 
@@ -683,7 +683,7 @@ class BuildTool {
                 );
 
                 if(parsed_paths.length == 0)
-                    throw new Error(`${this.id} -> exe_js(): import ${key} from ${obj[key]} failed`);
+                    throw new Error(`${this.src_dir} :: ${this.non_virtual_src_file() || this.id} -> exe_js(): import ${key} from ${obj[key]} failed`);
 
                 for(let parsed_path of parsed_paths){
 
@@ -703,7 +703,7 @@ class BuildTool {
             external_js(arr) {
 
                 if(!Array.isArray(arr))
-                    throw new Error(`${this.id} -> external_js(): ${arr} is not an array`);
+                    throw new Error(`${this.src_dir} :: ${this.non_virtual_src_file() || this.id} -> external_js(): ${arr} is not an array`);
 
                 this.external_js_array = external_js_array.concat(arr);
 
@@ -713,7 +713,7 @@ class BuildTool {
             external_js_module(arr) {
 
                 if(!Array.isArray(arr))
-                    throw new Error(`${this.id} -> external_js_module(): ${arr} is not an array`);
+                    throw new Error(`${this.src_dir} :: ${this.non_virtual_src_file() || this.id} -> external_js_module(): ${arr} is not an array`);
 
                 this.external_js_module_array = external_js_module_array.concat(arr);
 
