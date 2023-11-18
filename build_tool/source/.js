@@ -447,6 +447,21 @@ class BuildTool {
                 return this;
             },
 
+            use_and_get(path_query, options = new Object()) {
+
+                let use_id = "use_" + uuid.v4().replaceAll('-', '_');
+
+                var obj = new Object();
+                obj[use_id] = path_query;
+
+                this.use(
+                    obj,
+                    options
+                );
+
+                return this.variable_to_dependencies[use_id];
+            },
+
             use(obj, options = new Object()){
 
                 if(obj == null) return this;

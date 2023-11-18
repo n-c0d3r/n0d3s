@@ -159,6 +159,8 @@ class SrcParser {
                 script_build_path() { return ""; },
                 page_build_path() { return ""; },
 
+                use_and_get() { return {}; },
+
             };
             
             var build_state = false;
