@@ -356,7 +356,7 @@ class BuildTool {
 
         return module;
     }
-    create_module(src_content, src_dir, src_file){
+    create_module(src_content, src_dir, src_file, is_virtual = false){
 
         var build_tool = this;
 
@@ -364,17 +364,32 @@ class BuildTool {
 
         let func = new Function(parsed_src_content);
 
+        let id = null;
+        if(src_file != null)
+            id = file_path_to_id(src_file);
+        else
+            id = uuid.v4().replaceAll("-", "_");
+
         func = func.bind({
 
             parsed_src_content: parsed_src_content,
+
             src_file: src_file,
+            non_virtual_src_file(){
+
+                if (is_virtual)
+                    return null;
+
+                return this.src_file;
+            },
+
             src_dir: src_dir,
             src_content: src_content,
             build_tool: build_tool, 
             context: build_tool.context, 
-            id: "module_" + uuid.v4().replaceAll("-", "_"),
+            id: id,
 
-            is_virtual: (src_file == null),
+            is_virtual: is_virtual,
 
             ...BuildTool,
 
@@ -409,9 +424,9 @@ class BuildTool {
                 return this;
             },
 
-            create_virtual_module(file_content, src_dir, auto_add_dependency = true){
+            create_virtual_module(file_content, src_dir, auto_add_dependency = true, virtual_src_file){
 
-                let new_virtual_module = build_tool.create_module(file_content, src_dir || this.src_dir);
+                let new_virtual_module = build_tool.create_module(file_content, src_dir || this.src_dir, virtual_src_file, true);
 
                 if(auto_add_dependency)
                     this.add_dependency(new_virtual_module);
@@ -442,7 +457,7 @@ class BuildTool {
                     for(let path_query of obj){
 
                         let parsed_paths = build_tool.parse_path_query(
-                            this.src_dir, this.src_file, path_query, 
+                            this.src_dir, this.non_virtual_src_file(), path_query, 
                             'js', 
                             build_tool.command.additional_source_dirs,
                             options.entry_prefix || ""
@@ -480,7 +495,7 @@ class BuildTool {
                     for(let key in obj){
     
                         let parsed_paths = build_tool.parse_path_query(
-                            this.src_dir, this.src_file, obj[key], 
+                            this.src_dir, this.non_virtual_src_file(), obj[key], 
                             'js', 
                             build_tool.command.additional_source_dirs,
                             options.entry_prefix || ""
@@ -540,7 +555,7 @@ class BuildTool {
                 for(let key in obj){
     
                     let parsed_paths = build_tool.parse_path_query(
-                        this.src_dir, this.src_file, obj[key], 
+                        this.src_dir, this.non_virtual_src_file(), obj[key], 
                         'txt', 
                         build_tool.command.resource_dirs,
                         options.entry_prefix || ""
@@ -602,7 +617,7 @@ class BuildTool {
                 for(let key in obj){
     
                     let parsed_paths = build_tool.parse_path_query(
-                        this.src_dir, this.src_file, obj[key], 
+                        this.src_dir, this.non_virtual_src_file(), obj[key], 
                         'json', 
                         build_tool.command.resource_dirs, 
                         options.entry_prefix || ""
@@ -647,7 +662,7 @@ class BuildTool {
             exe_js(path, options = new Object()){
 
                 let parsed_paths = build_tool.parse_path_query(
-                    this.src_dir, this.src_file, path, 
+                    this.src_dir, this.non_virtual_src_file(), path, 
                     'js', 
                     build_tool.command.additional_source_dirs, 
                     options.entry_prefix || ""
@@ -698,7 +713,7 @@ class BuildTool {
 
                 return build_tool.parse_path_query(
                     this.src_dir,
-                    this.src_file,
+                    this.non_virtual_src_file(),
                     path_query,
                     file_extension,
                     additional_dirs,
@@ -748,9 +763,11 @@ class BuildTool {
             relative_page_build_path(){
 
                 let parsed_html_file = null;
+
+                let src_file = this.non_virtual_src_file();
                 
-                if(this.src_file != null)
-                    parsed_html_file = this.src_file.slice(0, this.src_file.length - 3) + ".html";
+                if(src_file != null)
+                    parsed_html_file = src_file.slice(0, src_file.length - 3) + ".html";
 
                 return "pages/" + path.normalize(path.relative(build_tool.command.source_dir, parsed_html_file || (this.src_dir + '/' + this.id + ".html")));
             },
