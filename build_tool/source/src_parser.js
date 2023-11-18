@@ -153,6 +153,12 @@ class SrcParser {
                 remove_data() { return module; },
                 is_has_data() { return false; },
 
+                relative_script_build_path() { return ""; },
+                relative_page_build_path() { return ""; },
+
+                script_build_path() { return ""; },
+                page_build_path() { return ""; },
+
             };
             
             var build_state = false;

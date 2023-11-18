@@ -741,6 +741,29 @@ class BuildTool {
                 return require(file_path);
             },
 
+            relative_script_build_path(){
+
+                return `scripts/${this.id}.js`;
+            },            
+            relative_page_build_path(){
+
+                let parsed_html_file = null;
+                
+                if(this.src_file != null)
+                    parsed_html_file = this.src_file.slice(0, this.src_file.length - 3) + ".html";
+
+                return "pages/" + path.normalize(path.relative(build_tool.command.source_dir, parsed_html_file || (this.src_dir + '/' + this.id + ".html")));
+            },
+
+            script_build_path(){
+
+                return build_tool.command.build_dir + "/" + this.relative_script_build_path();
+            },            
+            page_build_path(){
+
+                return build_tool.command.build_dir + "/" + this.relative_page_build_path();
+            },
+
         });
 
         return func(true);
@@ -804,9 +827,11 @@ class BuildTool {
         if(!fs.existsSync(scriptOutputDir))
             fs.mkdirSync(scriptOutputDir);
 
+        fse.emptyDirSync(scriptOutputDir);
+
         for(let module of this.modules){
 
-            let outputPath = `${scriptOutputDir}/${module.id}`;
+            let outputPath = module.script_build_path();
 
             let js_content = module.cl_src_content;
 
@@ -830,17 +855,16 @@ class BuildTool {
         if(!fs.existsSync(pageOutputDir))
             fs.mkdirSync(pageOutputDir);
 
+        fse.emptyDirSync(pageOutputDir);
+
         for(let module of this.modules){
 
             if(!module.is_page)
                 continue;
 
-            let relative_path = path.normalize(path.relative(this.command.source_dir, module.src_file || (module.src_dir + '/' + module.id + ".js")));
+            
 
-            relative_path = relative_path.slice(0, relative_path.length - 2) + 'html';
-
-            let outputPath = `${pageOutputDir}/${relative_path}`;
-            let scriptOutputPath = `${scriptOutputDir}/${module.id}`;
+            let outputPath = module.page_build_path();
 
             
 
@@ -856,7 +880,7 @@ class BuildTool {
 
                 for(let m of modules){
 
-                    htmlModuleContent += `<script src="${path.relative(path.dirname(outputPath), `${scriptOutputDir}/${m.id}`)}"></script>`;
+                    htmlModuleContent += `<script src="${path.relative(path.dirname(outputPath), m.script_build_path())}"></script>`;
 
                 }
 
