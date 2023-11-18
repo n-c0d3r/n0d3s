@@ -424,11 +424,16 @@ class BuildTool {
                 return this;
             },
 
-            create_virtual_module(file_content, src_dir, auto_add_dependency = true, virtual_src_file){
+            create_virtual_module(file_content, options = new Object()){
 
-                let new_virtual_module = build_tool.create_module(file_content, src_dir || this.src_dir, virtual_src_file, true);
+                let new_virtual_module = build_tool.create_module(
+                    file_content, 
+                    options.src_dir || this.src_dir, 
+                    options.virtual_src_file, 
+                    true
+                );
 
-                if(auto_add_dependency)
+                if(options.auto_add_dependency || true)
                     this.add_dependency(new_virtual_module);
         
                 return new_virtual_module;
