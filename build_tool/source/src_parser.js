@@ -163,6 +163,9 @@ class SrcParser {
 
                 auto_return() { return module; },
 
+                encode_js_str() { return ""; },
+                decode_js_str() { return ""; },
+
             };
             
             var build_state = false;

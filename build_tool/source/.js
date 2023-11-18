@@ -414,6 +414,15 @@ class BuildTool {
                 return module;
             },
 
+            encode_js_str(value){
+
+                return `"${encodeURIComponent(value)}"`;
+            },
+            decode_js_str(value){
+
+                return decodeURIComponent(value);
+            },
+
             add_dependency(module) {
 
                 this.dependent_modules[module.id] = module;
