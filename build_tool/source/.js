@@ -355,7 +355,7 @@ class BuildTool {
 
         return module;
     }
-    create_module(src_content, src_dir, src_file, is_virtual = false){
+    create_module(src_content, src_dir, src_file, is_virtual = false, creator_module){
 
         var build_tool = this;
 
@@ -401,7 +401,7 @@ class BuildTool {
             is_auto_return: false,
             auto_return_object: null,
 
-            creator_module: null,
+            creator_module: creator_module,
 
             build_tool: build_tool,
 
@@ -424,7 +424,7 @@ class BuildTool {
                     if(src_name)
                         src_name = path.basename(src_name);
 
-                    return `${this.creator_module.src_file}::${src_name || temp_module.id} { virtual }`;
+                    return `${this.creator_module.error_file_info_str()}::${src_name || temp_module.id}`;
                 }
                 else return this.src_file;
             },
@@ -451,10 +451,9 @@ class BuildTool {
                     file_content, 
                     options.src_dir || this.src_dir, 
                     options.virtual_src_file, 
-                    true
+                    true,
+                    this
                 );
-
-                new_virtual_module.creator_module = this;
 
                 if(options.auto_add_dependency || true)
                     this.add_dependency(new_virtual_module);
