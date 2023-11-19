@@ -849,7 +849,7 @@ class BuildTool {
         }
         catch(err) {
 
-            console.error(`${temp_module.src_dir} :: ${temp_module.non_virtual_src_file() || temp_module.id} -> (): failure error`);
+            console.error(`${temp_module.src_dir} :: ${temp_module.non_virtual_src_file() || temp_module.id} #${err.lineNumber} -> (): failure error`);
 
             throw err;
         }
