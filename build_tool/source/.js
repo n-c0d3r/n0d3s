@@ -854,6 +854,18 @@ class BuildTool {
             if(src_name)
                 src_name = path.basename(src_name);
 
+            err.stack.split('\n')
+                .slice(1)
+                .map(r => r.match(/\\ ( (?<file>.*): (?<line>\\d+): (?<pos>\\d+)\\)/))
+                .forEach(r => {
+                    if (r && r.groups && r.groups.file.substr(0, 8) !== 'internal') {
+                        const { file, line, pos } = r.groups;
+                        const f = fs.readFileSync(file, 'utf8').split('\n');
+                        console.warn(' ', file, 'at', line + ':' + pos);
+                        console.warn(' ', f[line - 1].trim());
+                    }
+                });
+
             console.error(`${temp_module.src_dir} :: ${src_name || temp_module.id} #${err.lineNumber} -> (): failure error`);
 
             throw err;
