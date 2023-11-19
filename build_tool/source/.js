@@ -408,7 +408,7 @@ class BuildTool {
                 let module = build_tool.import_module(file_path);
 
                 if(module == null)
-                    throw new Error(`${this.src_dir} :: ${this.non_virtual_src_file() || this.id} -> import(): import ${file_path} failed`);
+                    throw new Error(`${temp_module.src_dir} :: ${src_name || temp_module.id} -> import(): import ${file_path} failed`);
 
                 return module;
             },
@@ -489,7 +489,7 @@ class BuildTool {
                         );
 
                         if(parsed_paths.length == 0)
-                            throw new Error(`${this.src_dir} :: ${this.non_virtual_src_file() || this.id} -> use(): import ${path_query} failed`);
+                            throw new Error(`${temp_module.src_dir} :: ${src_name || temp_module.id} -> use(): import ${path_query} failed`);
 
                         if(!parsed_paths.is_multiple){
 
@@ -527,7 +527,7 @@ class BuildTool {
                         );
 
                         if(parsed_paths.length == 0)
-                            throw new Error(`${this.src_dir} :: ${this.non_virtual_src_file() || this.id} -> use(): import ${key} from ${object[key]} failed`);
+                            throw new Error(`${temp_module.src_dir} :: ${src_name || temp_module.id} -> use(): import ${key} from ${object[key]} failed`);
     
                         this.variable_to_dependencies[key] = [];
                         this.variable_to_dependencies[key].is_multiple = parsed_paths.is_multiple;
@@ -587,7 +587,7 @@ class BuildTool {
                     );
 
                     if(parsed_paths.length == 0)
-                        throw new Error(`${this.src_dir} :: ${this.non_virtual_src_file() || this.id} -> text(): from ${obj[key]} failed`);
+                        throw new Error(`${temp_module.src_dir} :: ${src_name || temp_module.id} -> text(): from ${obj[key]} failed`);
 
                     if(!parsed_paths.is_multiple){
 
@@ -675,7 +675,7 @@ class BuildTool {
                     );
 
                     if(parsed_paths.length == 0)
-                        throw new Error(`${this.src_dir} :: ${this.non_virtual_src_file() || this.id} -> json(): import ${key} from ${obj[key]} failed`);
+                        throw new Error(`${temp_module.src_dir} :: ${src_name || temp_module.id} -> json(): import ${key} from ${obj[key]} failed`);
 
                     if(!parsed_paths.is_multiple){
 
@@ -720,7 +720,7 @@ class BuildTool {
                 );
 
                 if(parsed_paths.length == 0)
-                    throw new Error(`${this.src_dir} :: ${this.non_virtual_src_file() || this.id} -> exe_js(): import ${key} from ${obj[key]} failed`);
+                    throw new Error(`${temp_module.src_dir} :: ${src_name || temp_module.id} -> exe_js(): import ${key} from ${obj[key]} failed`);
 
                 for(let parsed_path of parsed_paths){
 
@@ -740,7 +740,7 @@ class BuildTool {
             external_js(arr) {
 
                 if(!Array.isArray(arr))
-                    throw new Error(`${this.src_dir} :: ${this.non_virtual_src_file() || this.id} -> external_js(): ${arr} is not an array`);
+                    throw new Error(`${temp_module.src_dir} :: ${src_name || temp_module.id} -> external_js(): ${arr} is not an array`);
 
                 this.external_js_array = external_js_array.concat(arr);
 
@@ -750,7 +750,7 @@ class BuildTool {
             external_js_module(arr) {
 
                 if(!Array.isArray(arr))
-                    throw new Error(`${this.src_dir} :: ${this.non_virtual_src_file() || this.id} -> external_js_module(): ${arr} is not an array`);
+                    throw new Error(`${temp_module.src_dir} :: ${src_name || temp_module.id} -> external_js_module(): ${arr} is not an array`);
 
                 this.external_js_module_array = external_js_module_array.concat(arr);
 
@@ -854,19 +854,7 @@ class BuildTool {
             if(src_name)
                 src_name = path.basename(src_name);
 
-            err.stack.split('\n')
-                .slice(1)
-                .map(r => r.match(/\\ ( (?<file>.*): (?<line>\\d+): (?<pos>\\d+)\\)/))
-                .forEach(r => {
-                    if (r && r.groups && r.groups.file.substr(0, 8) !== 'internal') {
-                        const { file, line, pos } = r.groups;
-                        const f = fs.readFileSync(file, 'utf8').split('\n');
-                        console.warn(' ', file, 'at', line + ':' + pos);
-                        console.warn(' ', f[line - 1].trim());
-                    }
-                });
-
-            console.error(`${temp_module.src_dir} :: ${src_name || temp_module.id} #${err.lineNumber} -> (): failure error`);
+            console.error(`${temp_module.src_dir} :: ${src_name || temp_module.id} -> (): failure error`);
 
             throw err;
         }
