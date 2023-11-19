@@ -408,9 +408,23 @@ class BuildTool {
                 let module = build_tool.import_module(file_path);
 
                 if(module == null)
-                    throw new Error(`${temp_module.src_dir} :: ${src_name || temp_module.id} -> import(): import ${file_path} failed`);
+                    throw new Error(`${error_file_info_str()} -> import(): import ${file_path} failed`);
 
                 return module;
+            },
+
+            error_file_info_str(){
+
+                if(this.is_virtual) {
+
+                    let src_name = this.src_file;
+                    
+                    if(src_name)
+                        src_name = path.basename(src_name);
+
+                    return `${temp_module.src_dir} :: ${src_name || temp_module.id}`;
+                }
+                else return this.src_file;
             },
 
             encode_js_str(value){
@@ -489,7 +503,7 @@ class BuildTool {
                         );
 
                         if(parsed_paths.length == 0)
-                            throw new Error(`${temp_module.src_dir} :: ${src_name || temp_module.id} -> use(): import ${path_query} failed`);
+                            throw new Error(`${error_file_info_str()} -> use(): import ${path_query} failed`);
 
                         if(!parsed_paths.is_multiple){
 
@@ -527,7 +541,7 @@ class BuildTool {
                         );
 
                         if(parsed_paths.length == 0)
-                            throw new Error(`${temp_module.src_dir} :: ${src_name || temp_module.id} -> use(): import ${key} from ${object[key]} failed`);
+                            throw new Error(`${error_file_info_str()} -> use(): import ${key} from ${object[key]} failed`);
     
                         this.variable_to_dependencies[key] = [];
                         this.variable_to_dependencies[key].is_multiple = parsed_paths.is_multiple;
@@ -587,7 +601,7 @@ class BuildTool {
                     );
 
                     if(parsed_paths.length == 0)
-                        throw new Error(`${temp_module.src_dir} :: ${src_name || temp_module.id} -> text(): from ${obj[key]} failed`);
+                        throw new Error(`${error_file_info_str()} -> text(): from ${obj[key]} failed`);
 
                     if(!parsed_paths.is_multiple){
 
@@ -675,7 +689,7 @@ class BuildTool {
                     );
 
                     if(parsed_paths.length == 0)
-                        throw new Error(`${temp_module.src_dir} :: ${src_name || temp_module.id} -> json(): import ${key} from ${obj[key]} failed`);
+                        throw new Error(`${error_file_info_str()} -> json(): import ${key} from ${obj[key]} failed`);
 
                     if(!parsed_paths.is_multiple){
 
@@ -720,7 +734,7 @@ class BuildTool {
                 );
 
                 if(parsed_paths.length == 0)
-                    throw new Error(`${temp_module.src_dir} :: ${src_name || temp_module.id} -> exe_js(): import ${key} from ${obj[key]} failed`);
+                    throw new Error(`${error_file_info_str()} -> exe_js(): import ${key} from ${obj[key]} failed`);
 
                 for(let parsed_path of parsed_paths){
 
@@ -740,7 +754,7 @@ class BuildTool {
             external_js(arr) {
 
                 if(!Array.isArray(arr))
-                    throw new Error(`${temp_module.src_dir} :: ${src_name || temp_module.id} -> external_js(): ${arr} is not an array`);
+                    throw new Error(`${error_file_info_str()} -> external_js(): ${arr} is not an array`);
 
                 this.external_js_array = external_js_array.concat(arr);
 
@@ -750,7 +764,7 @@ class BuildTool {
             external_js_module(arr) {
 
                 if(!Array.isArray(arr))
-                    throw new Error(`${temp_module.src_dir} :: ${src_name || temp_module.id} -> external_js_module(): ${arr} is not an array`);
+                    throw new Error(`${error_file_info_str()} -> external_js_module(): ${arr} is not an array`);
 
                 this.external_js_module_array = external_js_module_array.concat(arr);
 
@@ -849,12 +863,7 @@ class BuildTool {
         }
         catch(err) {
 
-            let src_name = temp_module.src_file;
-
-            if(src_name)
-                src_name = path.basename(src_name);
-
-            console.error(`${temp_module.src_dir} :: ${src_name || temp_module.id} -> (): failure error`);
+            console.error(`${temp_module.error_file_info_str()} -> (): failure error`);
 
             throw err;
         }
